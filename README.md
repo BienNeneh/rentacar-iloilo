@@ -1,16 +1,83 @@
-# React + Vite
+# 🚗 RentACar Iloilo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A community car rental platform built with **React**, **Vite**, **Tailwind CSS**, and **Firebase**.
 
-Currently, two official plugins are available:
+The goal of RentACar Iloilo is to connect vehicle owners with renters within Iloilo Province through a simple and secure booking platform.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 👤 User Authentication
+- Register
+- Login
+- Protected Routes
 
-## Expanding the ESLint configuration
+### 🚗 Car Listings
+- Browse available cars
+- View detailed car information
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🧑‍💼 Owner Dashboard
+- List a new car
+- Edit car information
+- Manage availability
+- Delete listings
+- View booking requests
+- Approve or reject bookings
+
+### 🙋 Renter Dashboard
+- Browse available vehicles
+- Book a vehicle
+- View booking history
+- Track booking status
+
+---
+
+## 🛠 Tech Stack
+
+- React
+- Vite
+- Tailwind CSS
+- Firebase Authentication
+- Firebase Firestore
+- React Router
+
+---
+
+## 🚀 Live Demo
+
+https://rentacar-iloilo.vercel.app
+
+---
+
+## 📌 Current Features
+
+- ✅ Authentication
+- ✅ Browse Cars
+- ✅ Car Details
+- ✅ My Cars
+- ✅ Manage Cars
+- ✅ Booking Requests
+- ✅ My Bookings
+- ✅ Booking Approval Workflow
+- ✅ Responsive Design
+
+---
+
+## 🗺️ Roadmap
+
+### Coming Soon
+
+- Payments
+- Messaging
+- Reviews & Ratings
+- Notifications
+- Search Filters
+- Favorite Cars
+- Admin Dashboard
+
+---
+
+## 👨‍💻 Developer
+
+Created by **Bien De Los Reyes**
