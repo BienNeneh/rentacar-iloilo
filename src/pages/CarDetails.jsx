@@ -208,7 +208,7 @@ if (hasConflict) {
 
                 renterId: auth.currentUser.uid,
                 renterEmail: auth.currentUser.email,
-
+                renterName: auth.currentUser.displayName,
                 ownerId: car.ownerId,
                 ownerEmail: car.ownerEmail,
 

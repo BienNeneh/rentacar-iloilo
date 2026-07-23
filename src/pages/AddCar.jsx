@@ -4,8 +4,13 @@ import { addDoc, collection } from "firebase/firestore";
 import { auth } from "../firebase/firebase";
 import { serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import iloiloLocations from "../data/iloiloLocations";
+import vehicleTypes from "../data/vehicleTypes";
+
 
 function AddCar()  {
+const [location, setLocation] = useState("");
+const [vehicleType, setVehicleType] = useState("");
 const navigate = useNavigate();
 const [loading, setLoading] = useState(false);
 const [success, setSuccess] = useState(false);
@@ -27,6 +32,8 @@ async function handleSubmit(e) {
 
   try {
     await addDoc(collection(db, "cars"), {
+      location,
+      vehicleType,
       brand,
       model,
       year,
@@ -44,7 +51,8 @@ async function handleSubmit(e) {
     });
 
     setSuccess(true);
-
+    setLocation(""); 
+    setVehicleType("");
     setBrand("");
     setModel("");
     setYear("");
@@ -95,7 +103,7 @@ async function handleSubmit(e) {
         <form onSubmit={handleSubmit}>
 
           <div>
-            <label className="font-semibold block mb-2">
+            <label className="block mb-2 font-semibold">
               Car Brand
             </label>
 
@@ -109,7 +117,7 @@ async function handleSubmit(e) {
           </div>
 
           <div>
-            <label className="font-semibold block mb-2">
+            <label className="block mb-2 font-semibold">
               Car Model
             </label>
 
@@ -121,7 +129,53 @@ async function handleSubmit(e) {
   className="w-full border rounded-xl p-4"
 />
           </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
+    {/* Location */}
+
+    <div>
+        <label className="block mb-2 font-semibold">
+            Location
+        </label>
+
+        <select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full border rounded-xl p-4"
+        >
+            <option value="">Select Location</option>
+
+            {iloiloLocations.map((location) => (
+                <option key={location} value={location}>
+                    {location}
+                </option>
+            ))}
+        </select>
+    </div>
+
+    {/* Vehicle Type */}
+
+    <div>
+        <label className="block mb-2 font-semibold">
+            Vehicle Type
+        </label>
+
+        <select
+            value={vehicleType}
+            onChange={(e) => setVehicleType(e.target.value)}
+            className="w-full border rounded-xl p-4"
+        >
+            <option value="">Select Vehicle Type</option>
+
+            {vehicleTypes.map((type) => (
+                <option key={type} value={type}>
+                    {type}
+                </option>
+            ))}
+        </select>
+    </div>
+
+</div>
           <div className="grid md:grid-cols-2 gap-6">
 
             <div>
@@ -139,7 +193,7 @@ async function handleSubmit(e) {
             </div>
 
             <div>
-              <label className="font-semibold block mb-2">
+              <label className="block mb-2 font-semibold">
                 Seats
               </label>
 
@@ -157,7 +211,7 @@ async function handleSubmit(e) {
           <div className="grid md:grid-cols-2 gap-6">
 
   <div>
-    <label className="font-semibold block mb-2">
+    <label className="block mb-2 font-semibold">
       Transmission
     </label>
 
@@ -172,7 +226,7 @@ async function handleSubmit(e) {
   </div>
 
   <div>
-    <label className="font-semibold block mb-2">
+    <label className="block mb-2 font-semibold">
       Fuel Type
     </label>
 
@@ -192,7 +246,7 @@ async function handleSubmit(e) {
 
           <div>
 
-            <label className="font-semibold block mb-2">
+            <label className="block mb-2 font-semibold">
               Price Per Day
             </label>
 
@@ -208,14 +262,16 @@ async function handleSubmit(e) {
 
           <div>
 
-            <label className="font-semibold block mb-2">
+            <label className="block mb-2 font-semibold">
               Description
             </label>
              <div className="mt-6">
 
-  <label className="font-semibold block mb-2">
+  <label className="block mb-2 font-semibold">
     Car Image URL
   </label>
+
+
 
   <input
     type="text"
@@ -226,6 +282,9 @@ async function handleSubmit(e) {
   />
 
 </div>
+<label className="block mt-6 mb-2 font-semibold">
+    Description
+</label>
             <textarea
   rows="5"
   placeholder="Tell renters about your vehicle..."

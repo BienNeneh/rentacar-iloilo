@@ -151,164 +151,176 @@ function BookingRequests() {
               </p>
             </div>
           ) : (
-            <div className="space-y-8 mt-10">
+           <div className="space-y-8 mt-10">
 
-              {bookings.map((booking) => (
+  {bookings.map((booking) => {
 
-                <div
-                  key={booking.id}
-                  className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8"
-                >
+    if (!booking.car) {
+      return (
+        <div
+          key={booking.id}
+          className="bg-red-50 border border-red-200 rounded-3xl p-8"
+        >
+          <h2 className="text-2xl font-bold text-red-700">
+            Car No Longer Available
+          </h2>
 
-             {/* Header */}
+          <p className="text-gray-600 mt-3">
+            This booking belongs to a vehicle that has already been deleted.
+          </p>
+        </div>
+      );
+    }
 
-<div className="flex justify-between items-start">
+    return (
 
-  <div className="flex gap-6">
+      <div
+        key={booking.id}
+        className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8"
+      >
 
-    <img
-      src={booking.car?.image}
-      alt={`${booking.car?.brand} ${booking.car?.model}`}
-      className="w-44 h-28 object-cover rounded-2xl shadow"
-    />
+        {/* Header */}
 
-    <div>
+        <div className="flex justify-between items-start">
 
-      <h2 className="text-3xl font-bold">
-        🚗 {booking.car?.brand} {booking.car?.model}
-      </h2>
+          <div className="flex gap-6">
 
-      <p className="text-gray-500 mt-2">
-        {booking.car?.fuelType} • {booking.car?.seats} Seats
-      </p>
+            <img
+              src={booking.car.image}
+              alt={`${booking.car.brand} ${booking.car.model}`}
+              className="w-44 h-28 object-cover rounded-2xl shadow"
+            />
 
-    </div>
+            <div>
 
-  </div>
+              <h2 className="text-3xl font-bold">
+                {booking.car.brand} {booking.car.model}
+              </h2>
 
-  <div>
+              <p className="text-gray-500 mt-2 font-medium">
+                {booking.car.vehicleType} • {booking.car.year}
+              </p>
 
-    {booking.status === "Pending" && (
-      <span className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-semibold">
-        🟡 Pending
-      </span>
-    )}
+              <p className="text-gray-600 mt-2">
+                📍 {booking.car.location}
+              </p>
 
-    {booking.status === "Approved" && (
-      <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold">
-        🟢 Approved
-      </span>
-    )}
-
-    {booking.status === "Rejected" && (
-      <span className="bg-red-100 text-red-700 px-4 py-2 rounded-full font-semibold">
-        🔴 Rejected
-      </span>
-    )}
-
-  </div>
-
-</div>
-
-                  <hr className="my-6" />
-
-                  {/* Requested By */}
-
-                  <div>
-
-                    <p className="text-gray-500 font-semibold">
-                      👤 Requested By
-                    </p>
-
-                    <h3 className="text-xl font-semibold mt-2">
-                      {booking.renterEmail}
-                    </h3>
-
-                  </div>
-
-                  {/* Booking Details */}
-
-                  <div className="grid md:grid-cols-4 gap-6 mt-8">
-
-                    <div>
-
-                      <p className="text-gray-500">
-                        Pickup
-                      </p>
-
-                      <h3 className="font-bold mt-1">
-                        {booking.pickupDate}
-                      </h3>
-
-                    </div>
-
-                    <div>
-
-                      <p className="text-gray-500">
-                        Return
-                      </p>
-
-                      <h3 className="font-bold mt-1">
-                        {booking.returnDate}
-                      </h3>
-
-                    </div>
-
-                    <div>
-
-                      <p className="text-gray-500">
-                        Rental Days
-                      </p>
-
-                      <h3 className="font-bold mt-1">
-                        {booking.rentalDays}
-                      </h3>
-
-                    </div>
-
-                    <div>
-
-                      <p className="text-gray-500">
-                        Total
-                      </p>
-
-                      <h3 className="font-bold text-blue-600 mt-1">
-                        ₱{Number(booking.totalPrice).toLocaleString()}
-                      </h3>
-
-                    </div>
-
-                  </div>
-
-                  {/* Buttons */}
-
-                  {booking.status === "Pending" && (
-
-                    <div className="flex justify-end gap-4 mt-8">
-
-                      <button
-                        onClick={() => rejectBooking(booking.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-semibold transition"
-                      >
-                        Reject
-                      </button>
-
-                      <button
-                        onClick={() => approveBooking(booking.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition"
-                      >
-                        Approve
-                      </button>
-
-                    </div>
-
-                  )}
-
-                </div>
-
-              ))}
+              <p className="text-gray-600 mt-2">
+                ⚙ {booking.car.transmission} • 👥 {booking.car.seats} Seats
+              </p>
 
             </div>
+
+          </div>
+
+          <div>
+
+            {booking.status === "Pending" && (
+              <span className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-semibold">
+                🟡 Pending
+              </span>
+            )}
+
+            {booking.status === "Approved" && (
+              <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold">
+                🟢 Approved
+              </span>
+            )}
+
+            {booking.status === "Rejected" && (
+              <span className="bg-red-100 text-red-700 px-4 py-2 rounded-full font-semibold">
+                🔴 Rejected
+              </span>
+            )}
+
+          </div>
+
+        </div>
+
+        <hr className="my-6" />
+
+        {/* Requested By */}
+
+        <div>
+
+          <p className="text-gray-500 font-semibold">
+            👤 Requested By
+          </p>
+
+          <h3 className="text-xl font-semibold mt-2">
+  {booking.renterName || booking.renterEmail}
+</h3>
+
+<p className="text-gray-500 mt-1">
+  {booking.renterEmail}
+</p>
+
+        </div>
+
+        {/* Booking Details */}
+
+        <div className="grid md:grid-cols-4 gap-6 mt-8">
+
+          <div>
+            <p className="text-gray-500">Pickup</p>
+            <h3 className="font-bold mt-1">
+              {booking.pickupDate}
+            </h3>
+          </div>
+
+          <div>
+            <p className="text-gray-500">Return</p>
+            <h3 className="font-bold mt-1">
+              {booking.returnDate}
+            </h3>
+          </div>
+
+          <div>
+            <p className="text-gray-500">Rental Days</p>
+            <h3 className="font-bold mt-1">
+              {booking.rentalDays}
+            </h3>
+          </div>
+
+          <div>
+            <p className="text-gray-500">Total</p>
+            <h3 className="font-bold text-blue-600 mt-1">
+              ₱{Number(booking.totalPrice).toLocaleString()}
+            </h3>
+          </div>
+
+        </div>
+
+        {booking.status === "Pending" && (
+
+          <div className="flex justify-end gap-4 mt-8">
+
+            <button
+              onClick={() => rejectBooking(booking.id)}
+              className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-semibold transition"
+            >
+              Reject
+            </button>
+
+            <button
+              onClick={() => approveBooking(booking.id)}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition"
+            >
+              Approve
+            </button>
+
+          </div>
+
+        )}
+
+      </div>
+
+    );
+
+  })}
+
+</div>
+            
           )}
 
         </div>

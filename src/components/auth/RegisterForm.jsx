@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { auth } from "../../firebase/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { db } from "../../firebase/firebase";
 
 import {
@@ -33,12 +36,29 @@ async function handleRegister(e)
   }
 
   try {
-   const userCredential =
+  const userCredential =
   await createUserWithEmailAndPassword(
     auth,
     email,
     password
   );
+
+// Save the user's display name to Firebase Authentication
+await updateProfile(userCredential.user, {
+  displayName: fullName,
+});
+
+// Save additional user data to Firestore
+await setDoc(
+  doc(db, "users", userCredential.user.uid),
+  {
+    fullName,
+    email,
+    createdAt: serverTimestamp(),
+  }
+);
+
+alert("Account created successfully!");
 
 await setDoc(
   doc(db, "users", userCredential.user.uid),

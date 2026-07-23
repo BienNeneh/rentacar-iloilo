@@ -10,7 +10,13 @@ import {
   query,
   where,
 } from "firebase/firestore";
-
+import {
+  FaMapMarkerAlt,
+  FaCarSide,
+  FaCalendarAlt,
+  FaCog,
+  FaUsers,
+} from "react-icons/fa";
 function MyCars() {
   const [cars, setCars] = useState([]);
   const navigate = useNavigate();
@@ -128,27 +134,58 @@ function MyCars() {
 
         <div className="p-6">
 
-          <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold mb-4">
-            🟢 Available
-          </div>
+          <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
 
-          <h2 className="text-2xl font-bold">
-            {car.brand} {car.model}
-          </h2>
+    <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
 
-          <div className="space-y-2 text-gray-600 mt-4">
+    Available
 
-            <p>📅 {car.year}</p>
+</div>
 
-            <p>⚙ {car.transmission}</p>
+          <h2 className="text-3xl font-bold mt-2">
+  {car.brand} {car.model}
+</h2>
+<div className="mt-4 space-y-3">
 
-            <p>👥 {car.seats} Seats</p>
+  <div className="flex items-center gap-2 text-gray-500">
+    <FaCarSide className="text-blue-500" />
+    <span>
+      {car.vehicleType} • {car.year}
+    </span>
+  </div>
 
-          </div>
+  <div className="flex items-center gap-2 text-gray-600">
+    <FaMapMarkerAlt className="text-red-500" />
+    <span>{car.location}</span>
+  </div>
 
-          <p className="font-bold text-blue-600 text-xl mt-6">
-            ₱{car.price}/day
-          </p>
+  <div className="flex items-center justify-between text-gray-600">
+
+    <div className="flex items-center gap-2">
+      <FaCog className="text-gray-500" />
+      <span>{car.transmission}</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <FaUsers className="text-gray-500" />
+      <span>{car.seats} Seats</span>
+    </div>
+
+  </div>
+
+</div>
+
+          <p className="mt-6">
+
+  <span className="text-3xl font-bold text-blue-600">
+    ₱{Number(car.price).toLocaleString()}
+  </span>
+
+  <span className="text-gray-500 font-medium">
+    /day
+  </span>
+
+</p>
 
           <div className="grid grid-cols-3 gap-3 mt-6">
 

@@ -1,92 +1,118 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AddCar from "./pages/AddCar";
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Signup from "./pages/Signup";
+
 import Dashboard from "./pages/Dashboard";
-import ListCar from "./pages/ListCar";
-import CarDetails from "./pages/CarDetails";
-import NotFound from "./pages/NotFound";
+
+import AddCar from "./pages/AddCar";
 import MyCars from "./pages/MyCars";
-import Signup from "./pages/Signup.jsx";
-import ProtectedRoute from "./routes/ProtectedRoute";
 import EditCar from "./pages/EditCar";
 import ManageCar from "./pages/ManageCar";
-import BookingRequests from "./pages/BookingRequests";
 import Availability from "./pages/Availability";
+
+import ListCar from "./pages/ListCar";
+import CarDetails from "./pages/CarDetails";
+
+import BookingRequests from "./pages/BookingRequests";
+import MyBookings from "./pages/MyBookings";
+
+import NotFound from "./pages/NotFound";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
-    
       <Routes>
-<Route
-    path="/booking-requests"
-    element={
-        <ProtectedRoute>
-            <BookingRequests />
-        </ProtectedRoute>
-    }
-/>
 
-<Route
-  path="/availability/:id"
-  element={<Availability />}
-/>
+        {/* Public Routes */}
 
-        <Route
-  path="/edit-car/:id"
-  element={
-
-
-    
-    <ProtectedRoute>
-      <EditCar />
-    </ProtectedRoute>
-  }
-/>
-<Route
-    path="/manage-car/:id"
-    element={
-        <ProtectedRoute>
-            <ManageCar />
-        </ProtectedRoute>
-    }
-/>
-
-        <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Home />} />
-        <Route
-  path="/add-car"
-  element={
-    <ProtectedRoute>
-      <AddCar />
-    </ProtectedRoute>
-  }
-/>
-        <Route path="/login" element={<Login />} />
-        <Route
-  path="/my-cars"
-  element={
-    <ProtectedRoute>
-      <MyCars />
-    </ProtectedRoute>
-  }
-/>
-        <Route path="/register" element={<Register />} />
-
-        <Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute>
-      <Dashboard />
-    </ProtectedRoute>
-  }
-/>
-
         <Route path="/list-car" element={<ListCar />} />
-
         <Route path="/car/:id" element={<CarDetails />} />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Protected Routes */}
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-cars"
+          element={
+            <ProtectedRoute>
+              <MyCars />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/add-car"
+          element={
+            <ProtectedRoute>
+              <AddCar />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/edit-car/:id"
+          element={
+            <ProtectedRoute>
+              <EditCar />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/manage-car/:id"
+          element={
+            <ProtectedRoute>
+              <ManageCar />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/availability/:id"
+          element={
+            <ProtectedRoute>
+              <Availability />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/booking-requests"
+          element={
+            <ProtectedRoute>
+              <BookingRequests />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-bookings"
+          element={
+            <ProtectedRoute>
+              <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 404 */}
 
         <Route path="*" element={<NotFound />} />
 
