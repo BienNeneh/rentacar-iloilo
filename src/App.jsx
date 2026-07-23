@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Signup from "./pages/Signup";
-
+import { Toaster } from "react-hot-toast";
 import Dashboard from "./pages/Dashboard";
 
 import AddCar from "./pages/AddCar";
@@ -26,6 +26,10 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 function App() {
   return (
     <BrowserRouter>
+     <Toaster
+        position="top-right"
+        reverseOrder={false}
+      />
       <Routes>
 
         {/* Public Routes */}
@@ -48,6 +52,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
 
         <Route
           path="/my-cars"

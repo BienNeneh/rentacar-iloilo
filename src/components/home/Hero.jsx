@@ -23,7 +23,6 @@ function Hero() {
         <div className="mt-10 flex gap-5">
 <button
   onClick={() => {
-    alert("Button clicked!");
     navigate("/list-car");
   }}
   className="bg-white text-blue-700 px-8 py-4 rounded-xl font-semibold hover:scale-105 transition"

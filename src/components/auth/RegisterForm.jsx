@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { auth } from "../../firebase/firebase";
+import toast from "react-hot-toast";
+import { auth, db } from "../../firebase/firebase";
+
 import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { db } from "../../firebase/firebase";
 
 import {
   doc,
@@ -13,75 +14,74 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
+function RegisterForm() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-function RegisterForm() 
+  async function handleRegister(e) {
+    e.preventDefault();
 
+    if (loading) return;
 
-{
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
 
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [confirmPassword, setConfirmPassword] = useState("");
-const [fullName, setFullName] = useState("");
+    setLoading(true);
 
-async function handleRegister(e)
+    try {
+      const userCredential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
 
-{
-  ;
-  e.preventDefault();
-  console.log("Register button clicked!");
-  if (password !== confirmPassword) {
-    alert("Passwords do not match.");
-    return;
-  }
+      // Save display name to Firebase Authentication
+      await updateProfile(userCredential.user, {
+        displayName: fullName,
+      });
 
-  try {
-  const userCredential =
-  await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+      // Save additional user information to Firestore
+      await setDoc(
+        doc(db, "users", userCredential.user.uid),
+        {
+          fullName,
+          email,
+          createdAt: serverTimestamp(),
+        }
+      );
 
-// Save the user's display name to Firebase Authentication
-await updateProfile(userCredential.user, {
-  displayName: fullName,
-});
+    toast.success("Account created successfully!");
 
-// Save additional user data to Firestore
-await setDoc(
-  doc(db, "users", userCredential.user.uid),
-  {
-    fullName,
-    email,
-    createdAt: serverTimestamp(),
-  }
-);
+      // Optional: Clear the form
+      setFullName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
 
-alert("Account created successfully!");
+      // Optional later:
+      // navigate("/dashboard");
 
-await setDoc(
-  doc(db, "users", userCredential.user.uid),
-  {
-    fullName,
-    email,
-    createdAt: serverTimestamp(),
-  }
-);
+    } catch (error) {
+      console.error(error);
 
-alert("Account created successfully!");
-
-  } catch (error) {
-  console.log(error.code);
-  console.log(error.message);
-
-  alert(error.code);
+     if (error.code === "auth/email-already-in-use") {
+  toast.error("This email is already registered.");
+} else {
+  toast.error(error.message);
 }
-}
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="bg-white w-full max-w-md rounded-3xl shadow-xl p-10">
-
       <h2 className="text-4xl font-bold">
         Create Account
       </h2>
@@ -91,22 +91,22 @@ alert("Account created successfully!");
       </p>
 
       <form
-  onSubmit={handleRegister}
-  className="mt-8 space-y-5"
->
-
+        onSubmit={handleRegister}
+        className="mt-8 space-y-5"
+      >
         <div>
           <label className="block mb-2 font-semibold">
             Full Name
           </label>
 
           <input
-  type="text"
-  placeholder="Juan Dela Cruz"
-  value={fullName}
-  onChange={(e) => setFullName(e.target.value)}
-  className="w-full border rounded-xl px-4 py-3 outline-none focus:border-blue-500"
-/>
+            type="text"
+            placeholder="Juan Dela Cruz"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            className="w-full border rounded-xl px-4 py-3 outline-none focus:border-blue-500"
+            required
+          />
         </div>
 
         <div>
@@ -115,12 +115,13 @@ alert("Account created successfully!");
           </label>
 
           <input
-  type="email"
-  placeholder="juan@email.com"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  className="w-full border rounded-xl px-4 py-3 outline-none focus:border-blue-500"
-/>
+            type="email"
+            placeholder="juan@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border rounded-xl px-4 py-3 outline-none focus:border-blue-500"
+            required
+          />
         </div>
 
         <div>
@@ -128,13 +129,14 @@ alert("Account created successfully!");
             Password
           </label>
 
-         <input
-  type="password"
-  placeholder="********"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  className="w-full border rounded-xl px-4 py-3 outline-none focus:border-blue-500"
-/>
+          <input
+            type="password"
+            placeholder="********"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border rounded-xl px-4 py-3 outline-none focus:border-blue-500"
+            required
+          />
         </div>
 
         <div>
@@ -143,33 +145,31 @@ alert("Account created successfully!");
           </label>
 
           <input
-  type="password"
-  placeholder="********"
-  value={confirmPassword}
-  onChange={(e) => setConfirmPassword(e.target.value)}
-  className="w-full border rounded-xl px-4 py-3 outline-none focus:border-blue-500"
-/>
+            type="password"
+            placeholder="********"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full border rounded-xl px-4 py-3 outline-none focus:border-blue-500"
+            required
+          />
         </div>
-<button
-  type="submit"
-          className="
-            w-full
-            bg-blue-600
-            hover:bg-blue-700
-            text-white
-            py-4
-            rounded-xl
-            font-semibold
-            transition
-          "
-        >
-          Create Account
-        </button>
 
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-4 rounded-xl font-semibold text-white transition ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {loading
+            ? "Creating Account..."
+            : "Create Account"}
+        </button>
       </form>
 
       <p className="text-center mt-8 text-gray-500">
-
         Already have an account?
 
         <Link
@@ -178,9 +178,7 @@ alert("Account created successfully!");
         >
           Sign In
         </Link>
-
       </p>
-
     </div>
   );
 }

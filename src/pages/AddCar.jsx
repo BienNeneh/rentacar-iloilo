@@ -6,7 +6,7 @@ import { serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import iloiloLocations from "../data/iloiloLocations";
 import vehicleTypes from "../data/vehicleTypes";
-
+import ImageUploader from "../components/upload/ImageUploader";
 
 function AddCar()  {
 const [location, setLocation] = useState("");
@@ -262,24 +262,19 @@ async function handleSubmit(e) {
 
           <div>
 
-            <label className="block mb-2 font-semibold">
-              Description
-            </label>
-             <div className="mt-6">
+            
+             <div className="mt-8">
 
-  <label className="block mb-2 font-semibold">
-    Car Image URL
-  </label>
+  
+<div className="mt-8">
 
-
-
-  <input
-    type="text"
-    placeholder="https://..."
-    value={image}
-    onChange={(e) => setImage(e.target.value)}
-    className="w-full border rounded-xl p-4"
+  <ImageUploader
+    image={image}
+    setImage={setImage}
   />
+
+</div>
+
 
 </div>
 <label className="block mt-6 mb-2 font-semibold">
