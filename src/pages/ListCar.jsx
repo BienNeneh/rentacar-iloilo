@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 function ListCar() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+const city = searchParams.get("city");
+const vehicleType = searchParams.get("type");
   const [cars, setCars] = useState([]);
 
   useEffect(() => {
@@ -25,7 +29,18 @@ function ListCar() {
 
     fetchCars();
   }, []);
+const filteredCars = cars.filter((car) => {
 
+  const matchesCity =
+  !city ||
+  car.location?.toLowerCase().includes(city.toLowerCase());
+
+  const matchesType =
+  !vehicleType ||
+  car.vehicleType?.toLowerCase() === vehicleType.toLowerCase();
+
+  return matchesCity && matchesType;
+});
   return (
     
     <div className="min-h-screen bg-gray-100">
@@ -33,13 +48,13 @@ function ListCar() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         <h1 className="text-5xl font-bold mb-10">Browse Cars</h1>
 
-        {cars.length === 0 ? (
+        {filteredCars.length === 0 ? (
           <h2 className="text-gray-500 text-xl">
             No cars available.
           </h2>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cars.map((car) => (
+            {filteredCars.map((car) => (
               <div
                 key={car.id}
                 className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition duration-300"

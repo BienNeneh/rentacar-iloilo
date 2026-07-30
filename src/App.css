@@ -90,3 +90,8 @@ body{
 .react-calendar__tile:hover {
     background: #dbeafe;
 }
+.blocked-date {
+  background: #ef4444 !important;
+  color: white !important;
+  border-radius: 9999px;
+}

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db, auth } from "../firebase/firebase";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
-
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 import {
     FaCalendarAlt,
     FaGasPump,
@@ -35,6 +36,7 @@ function CarDetails() {
   const [showGallery, setShowGallery] = useState(false);
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
+  const [selectedRange, setSelectedRange] = useState(null);
   // Fetch car from Firestore
   const isOwner =
   auth.currentUser &&
@@ -54,7 +56,8 @@ function CarDetails() {
         };
 
         setCar(carData);
-
+console.log("Car Data:", carData);
+console.log("Blocked Dates:", carData.blockedDates);
         // Fetch approved bookings
         const bookingQuery = query(
           collection(db, "bookings"),
@@ -317,11 +320,9 @@ if (hasConflict) {
 </div>
 
 <div className="flex items-center gap-2 text-gray-500 mt-2">
+    <FaMapMarkerAlt className="text-red-500" />
 
-    <FaMapMarkerAlt className="text-red-500"/>
-
-    Iloilo City
-
+    <span>{car.location || "Location not specified"}</span>
 </div>
 
 <p className="text-5xl font-bold text-blue-600 mt-8">
@@ -448,6 +449,44 @@ if (hasConflict) {
     <h2 className="text-2xl font-bold mb-6">
         📅 Book This Car
     </h2>
+   <Calendar
+  selectRange={true}
+  value={selectedRange}
+  onChange={(range) => {
+    setSelectedRange(range);
+
+    if (Array.isArray(range)) {
+      const [start, end] = range;
+
+      const formatDate = (date) =>
+        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+      setPickupDate(formatDate(start));
+
+      if (end) {
+        setReturnDate(formatDate(end));
+      } else {
+        setReturnDate("");
+      }
+    }
+  }}
+
+  tileClassName={({ date }) => {
+    const formatted =
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+    return car.blockedDates?.includes(formatted)
+      ? "blocked-date"
+      : null;
+  }}
+
+  tileDisabled={({ date }) => {
+    const formatted =
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+    return car.blockedDates?.includes(formatted);
+  }}
+/>
 {unavailableDates.length > 0 && (
   <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
 
@@ -482,34 +521,29 @@ if (hasConflict) {
 )}
     <div className="space-y-5">
 
-        <div>
-            <label className="font-semibold block mb-2">
-                Pickup Date
-            </label>
+     <div className="bg-white rounded-xl border p-4">
+    <p className="text-xs uppercase tracking-wide text-gray-500">
+        Pickup Date
+    </p>
 
-           <input
-    type="date"
-    value={pickupDate}
-    onChange={(e) => setPickupDate(e.target.value)}
-    min={new Date().toISOString().split("T")[0]}
-    className="w-full border rounded-xl p-3"
-/>
-        </div>
+    <p className="text-xl font-bold mt-1">
+        {pickupDate
+            ? new Date(pickupDate).toLocaleDateString()
+            : "Select a date"}
+    </p>
+</div>
 
-        <div>
-            <label className="font-semibold block mb-2">
-                Return Date
-            </label>
+        <div className="bg-white rounded-xl border p-4">
+    <p className="text-xs uppercase tracking-wide text-gray-500">
+        Return Date
+    </p>
 
-          <input
-    type="date"
-    value={returnDate}
-    onChange={(e) => setReturnDate(e.target.value)}
-    min={pickupDate || new Date().toISOString().split("T")[0]}
-    className="w-full border rounded-xl p-3"
-/>
-        </div>
-
+    <p className="text-xl font-bold mt-1">
+        {returnDate
+            ? new Date(returnDate).toLocaleDateString()
+            : "Select a date"}
+    </p>
+</div>
         <div className="flex justify-between text-lg">
             <span>Rental Duration</span>
             <strong>{totalDays} Days</strong>

@@ -1,1 +1,28 @@
 @import "tailwindcss";
+.react-calendar button.blocked-date {
+    background: #ef4444 !important;
+    color: white !important;
+    border-radius: 50% !important;
+}
+
+.react-calendar button.blocked-date abbr {
+    color: white !important;
+    font-weight: bold;
+}
+
+.react-calendar {
+    width: 100%;
+    max-width: 100%;
+    border: none;
+    border-radius: 22px;
+    background: white;
+    padding: 24px;
+}
+
+.react-calendar__tile:hover {
+    background: #dbeafe;
+}
+.react-calendar button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}

@@ -1,68 +1,99 @@
-import { FaStar, FaUsers, FaCog } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import {
+  FaUsers,
+  FaCog,
+  FaArrowRight,
+} from "react-icons/fa";
 
 function CarCard({ car }) {
+  const image =
+    car.image ||
+    "https://placehold.co/600x400/F7F3EC/999999?text=No+Image";
+
+  const title =
+    `${car.brand || ""} ${car.model || ""}`.trim() ||
+    "Unnamed Vehicle";
+
+  const transmission = car.transmission || "Automatic";
+  const seats = car.seats || "-";
+  const price = Number(car.price || 0).toLocaleString();
+
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition duration-300">
+    <div className="group flex flex-col bg-white rounded-3xl overflow-hidden border border-orange-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
 
-      <img
-        src={car.image}
-        alt={car.name}
-        className="h-56 w-full object-cover"
-      />
+      {/* Image */}
+      <div className="relative overflow-hidden">
 
-      <div className="p-6">
+        <img
+          src={image}
+          alt={title}
+          className="h-60 w-full object-cover transition duration-500 group-hover:scale-105"
+        />
 
-        <h2 className="text-2xl font-bold">
-          {car.name}
-        </h2>
+        <div className="absolute top-4 left-4">
 
-        <div className="flex items-center gap-2 mt-2 text-yellow-500">
-
-          <FaStar />
-
-          <span className="font-semibold">
-            {car.rating}
+          <span className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-orange-600 shadow">
+            New Listing
           </span>
 
         </div>
 
-        <div className="flex justify-between mt-5 text-gray-600">
+      </div>
 
-          <div className="flex items-center gap-2">
+      {/* Content */}
+      <div className="flex flex-col flex-1 p-6">
 
-            <FaCog />
+        <div>
 
-            {car.transmission}
+          <h2 className="text-2xl font-bold text-gray-800 line-clamp-2">
+            {title}
+          </h2>
 
-          </div>
+          <div className="flex justify-between mt-6 text-gray-600">
 
-          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
 
-            <FaUsers />
+              <FaCog className="text-orange-500" />
 
-            {car.seats} Seats
+              <span>{transmission}</span>
+
+            </div>
+
+            <div className="flex items-center gap-2">
+
+              <FaUsers className="text-orange-500" />
+
+              <span>{seats} Seats</span>
+
+            </div>
 
           </div>
 
         </div>
 
-        <div className="mt-6 flex justify-between items-center">
+        {/* Bottom */}
+        <div className="mt-auto pt-8 flex justify-between items-end">
 
-          <h3 className="text-3xl font-bold text-blue-600">
+          <div>
 
-            ₱{car.price}
+            <p className="text-3xl font-bold text-orange-500">
+              ₱{price}
+            </p>
 
-            <span className="text-base text-gray-500">
-              /day
-            </span>
+            <p className="text-sm text-gray-500">
+              per day
+            </p>
 
-          </h3>
+          </div>
 
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl">
+          <Link
+            to={`/car-details/${car.id}`}
+            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-medium transition"
+          >
+            View
 
-            View Details
-
-          </button>
+            <FaArrowRight />
+          </Link>
 
         </div>
 
