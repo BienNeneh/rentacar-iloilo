@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import iloiloLocations from "../../data/iloiloLocations";
 import {
   FaSearch,
   FaMapMarkerAlt,
@@ -10,7 +11,7 @@ import {
 function SearchBar() {
   const navigate = useNavigate();
 
-  const [city, setCity] = useState("");
+  const [location, setLocation] = useState("");
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [vehicleType, setVehicleType] = useState("Any");
@@ -18,8 +19,8 @@ function SearchBar() {
   function handleSearch() {
     const params = new URLSearchParams();
 
-    if (city.trim()) {
-      params.append("city", city);
+    if (location.trim()) {
+      params.append("location", location);
     }
 
     if (pickupDate) {
@@ -44,27 +45,32 @@ function SearchBar() {
         <div className="bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl border border-orange-100 p-6 lg:p-8">
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5">
+{/* Pickup Location */}
+<div>
+  <label className="block text-sm font-semibold text-gray-600 mb-2">
+    Pickup Location
+  </label>
 
-            {/* Pickup Location */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-600 mb-2">
-                Pickup Location
-              </label>
+  <div className="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl px-4 py-4 focus-within:border-orange-400 transition">
 
-              <div className="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl px-4 py-4 focus-within:border-orange-400 transition">
+    <FaMapMarkerAlt className="text-orange-500" />
 
-                <FaMapMarkerAlt className="text-orange-500" />
+    <select
+      value={location}
+      onChange={(e) => setLocation(e.target.value)}
+      className="w-full bg-transparent outline-none cursor-pointer"
+    >
+      <option value="">All Locations</option>
 
-                <input
-                  type="text"
-                  placeholder="Iloilo City"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full bg-transparent outline-none placeholder:text-gray-400"
-                />
+      {iloiloLocations.map((place) => (
+        <option key={place} value={place}>
+          {place}
+        </option>
+      ))}
+    </select>
 
-              </div>
-            </div>
+  </div>
+</div>
 
             {/* Pickup Date */}
             <div>

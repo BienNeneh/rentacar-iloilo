@@ -1,6 +1,7 @@
+import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 
-function LocationCard({ location }) {
+function LocationCard({ location, carCount }) {
   return (
     <div className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 hover:-translate-y-2">
 
@@ -18,29 +19,32 @@ function LocationCard({ location }) {
           {location.name}
         </h2>
 
-        <p className="text-gray-500 mt-2">
-          🚗 {location.cars} Cars Available
-        </p>
+       <p className="text-gray-500 mt-2">
+  🚗 {carCount === 0
+    ? "No cars yet"
+    : `${carCount} ${carCount === 1 ? "Car" : "Cars"} Available`}
+</p>
 
         <p className="text-sm text-gray-400 mt-2">
           Serving renters across {location.name}
         </p>
 
-        <button
-          className="
-            mt-6
-            text-blue-600
-            font-semibold
-            flex
-            items-center
-            gap-2
-            hover:gap-4
-            transition-all
-          "
-        >
-          Explore
-          <FaArrowRight />
-        </button>
+        <Link
+  to={`/list-car?location=${encodeURIComponent(location.name)}`}
+  className="
+    mt-6
+    text-blue-600
+    font-semibold
+    flex
+    items-center
+    gap-2
+    hover:gap-4
+    transition-all
+  "
+>
+  Explore
+  <FaArrowRight />
+</Link>
 
       </div>
 

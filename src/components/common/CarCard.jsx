@@ -87,7 +87,7 @@ function CarCard({ car }) {
           </div>
 
           <Link
-            to={`/car-details/${car.id}`}
+            to={`/car/${car.id}`}
             className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-medium transition"
           >
             View

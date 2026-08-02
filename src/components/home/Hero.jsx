@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
   FaArrowRight,
   FaMapMarkerAlt,
@@ -11,13 +12,21 @@ import heroRoadtrip from "../../assets/images/hero-roadtrip.png";
 
 function Hero() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  function handleBecomeHost() {
+    if (currentUser) {
+      navigate("/add-car");
+    } else {
+      navigate("/signup");
+    }
+  }
 
   return (
     <section className="relative overflow-hidden bg-[#FFF8ED]">
 
       {/* Background Image */}
       <div className="absolute inset-0">
-
         <img
           src={heroRoadtrip}
           alt="Road Trip"
@@ -31,7 +40,6 @@ function Hero() {
             select-none
           "
         />
-
       </div>
 
       {/* Desktop Overlay */}
@@ -73,17 +81,12 @@ function Hero() {
           <div className="max-w-3xl py-20 lg:py-0">
 
             {/* Badge */}
-
             <div className="inline-flex items-center gap-2 rounded-full bg-white/90 backdrop-blur px-4 py-2 shadow-lg text-orange-600 font-semibold text-sm">
-
               <FaMapMarkerAlt />
-
               Community Powered in Iloilo
-
             </div>
 
             {/* Heading */}
-
             <h1
               className="
                 mt-8
@@ -105,17 +108,13 @@ function Hero() {
             </h1>
 
             {/* Description */}
-
             <p className="mt-6 text-base sm:text-lg lg:text-xl leading-8 text-[#5C463B]">
-
               Discover trusted vehicles shared by your local community.
-
-              Whether you're planning a beach getaway, a weekend road trip, or visiting family, your next adventure starts here.
-
+              Whether you're planning a beach getaway, a weekend road trip, or
+              visiting family, your next adventure starts here.
             </p>
 
             {/* Buttons */}
-
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
 
               <button
@@ -136,6 +135,7 @@ function Hero() {
               </button>
 
               <button
+                onClick={handleBecomeHost}
                 className="
                   bg-white
                   rounded-2xl
@@ -152,39 +152,28 @@ function Hero() {
                 "
               >
                 Become a Host
-
                 <FaArrowRight />
-
               </button>
 
             </div>
 
             {/* Stats */}
-
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
 
               <div className="flex items-center gap-3">
 
                 <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center">
-
                   <FaCarSide className="text-orange-500 text-xl" />
-
                 </div>
 
                 <div>
-
                   <h3 className="text-2xl lg:text-3xl font-black text-orange-500">
-
                     100+
-
                   </h3>
 
                   <p className="text-[#5C463B]">
-
                     Cars Listed
-
                   </p>
-
                 </div>
 
               </div>
@@ -192,25 +181,17 @@ function Hero() {
               <div className="flex items-center gap-3">
 
                 <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center">
-
                   <FaUsers className="text-orange-500 text-xl" />
-
                 </div>
 
                 <div>
-
                   <h3 className="text-2xl lg:text-3xl font-black text-orange-500">
-
                     Local
-
                   </h3>
 
                   <p className="text-[#5C463B]">
-
                     Community
-
                   </p>
-
                 </div>
 
               </div>
@@ -218,25 +199,17 @@ function Hero() {
               <div className="flex items-center gap-3">
 
                 <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center">
-
                   <FaShieldAlt className="text-orange-500 text-xl" />
-
                 </div>
 
                 <div>
-
                   <h3 className="text-2xl lg:text-3xl font-black text-orange-500">
-
                     Safe
-
                   </h3>
 
                   <p className="text-[#5C463B]">
-
                     Verified
-
                   </p>
-
                 </div>
 
               </div>

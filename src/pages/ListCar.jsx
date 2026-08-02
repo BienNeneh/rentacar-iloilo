@@ -7,7 +7,7 @@ function ListCar() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-const city = searchParams.get("city");
+const location = searchParams.get("location");
 const vehicleType = searchParams.get("type");
   const [cars, setCars] = useState([]);
 
@@ -31,15 +31,15 @@ const vehicleType = searchParams.get("type");
   }, []);
 const filteredCars = cars.filter((car) => {
 
-  const matchesCity =
-  !city ||
-  car.location?.toLowerCase().includes(city.toLowerCase());
+ const matchesLocation =
+  !location ||
+  car.location?.toLowerCase() === location.toLowerCase();
 
   const matchesType =
   !vehicleType ||
   car.vehicleType?.toLowerCase() === vehicleType.toLowerCase();
 
-  return matchesCity && matchesType;
+  return matchesLocation && matchesType;
 });
   return (
     
@@ -81,8 +81,11 @@ const filteredCars = cars.filter((car) => {
                       (0 Reviews)
                     </span>
                   </div>
-
-                  <div className="mt-6 space-y-3 text-gray-600">
+<div className="flex items-center gap-2 mt-3 text-gray-500">
+  <span>📍</span>
+  <span>{car.location}</span>
+</div>
+                  <div className="mt-2 space-y-3 text-gray-600">
                     <div>
                       🚘 {car.transmission}
                     </div>
