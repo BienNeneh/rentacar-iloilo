@@ -13,10 +13,13 @@
 .react-calendar {
     width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
+
     border: none;
     border-radius: 22px;
     background: white;
-    padding: 24px;
+
+    padding: 12px;
 }
 
 .react-calendar__tile:hover {
@@ -25,4 +28,9 @@
 .react-calendar button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+}
+html,
+body,
+#root {
+  overflow-x: hidden;
 }
