@@ -84,31 +84,14 @@ const matchesRentalDuration =
     !requestedDates.some((date) =>
       car.blockedDates.includes(date)
     );
-    const approvedBookings = bookings.filter(
-  (booking) =>
-    booking.carId === car.id &&
-    booking.status === "Approved"
-);
-const hasApprovedBookingConflict =
-  approvedBookings.some((booking) => {
-    const bookingPickup = new Date(booking.pickupDate);
-    const bookingReturn = new Date(booking.returnDate);
-
-    const requestPickup = new Date(pickupDate);
-    const requestReturn = new Date(returnDate);
-
-    return (
-      requestPickup <= bookingReturn &&
-      requestReturn >= bookingPickup
-    );
-  });
+   
+ 
 return (
   matchesLocation &&
   matchesType &&
   isAvailable &&
   matchesRentalDuration &&
-  hasBlockedDatesOverlap &&
-  !hasApprovedBookingConflict
+  hasBlockedDatesOverlap
 );
 });
   return (

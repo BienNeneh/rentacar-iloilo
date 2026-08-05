@@ -156,15 +156,23 @@ function MyBookings() {
                     className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8"
                   >
 
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col md:flex-row md:justify-between gap-6">
 
-                      <div className="flex gap-6">
+                      <div className="flex flex-col sm:flex-row gap-5 flex-1">
 
                         <img
-                          src={booking.car.image}
-                          alt={booking.car.brand}
-                          className="w-44 h-28 rounded-2xl object-cover"
-                        />
+  src={booking.car.image}
+  alt={booking.car.brand}
+  className="
+    w-full
+    sm:w-44
+    h-52
+    sm:h-28
+    rounded-2xl
+    object-cover
+    flex-shrink-0
+  "
+/>
 
                         <div>
 

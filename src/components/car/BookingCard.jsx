@@ -65,33 +65,67 @@ shadow-sm
 
           }}
 
-          tileClassName={({ date }) => {
+        tileClassName={({ date }) => {
 
-            const formatted =
-              `${date.getFullYear()}-${String(
-                date.getMonth() + 1
-              ).padStart(2, "0")}-${String(
-                date.getDate()
-              ).padStart(2, "0")}`;
+  const formatted =
+    `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${String(
+      date.getDate()
+    ).padStart(2, "0")}`;
 
-            return car.blockedDates?.includes(formatted)
-              ? "blocked-date"
-              : null;
+  const isBlocked =
+    car.blockedDates?.includes(formatted);
 
-          }}
+  const isBooked =
+    unavailableDates.some((booking) => {
 
-          tileDisabled={({ date }) => {
+      const pickup = new Date(booking.pickupDate);
+      const returnDate = new Date(booking.returnDate);
+      const current = new Date(formatted);
 
-            const formatted =
-              `${date.getFullYear()}-${String(
-                date.getMonth() + 1
-              ).padStart(2, "0")}-${String(
-                date.getDate()
-              ).padStart(2, "0")}`;
+      return (
+        current >= pickup &&
+        current <= returnDate
+      );
 
-            return car.blockedDates?.includes(formatted);
+    });
 
-          }}
+  return (isBlocked || isBooked)
+    ? "blocked-date"
+    : null;
+
+}}
+
+      tileDisabled={({ date }) => {
+
+  const formatted =
+    `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${String(
+      date.getDate()
+    ).padStart(2, "0")}`;
+
+  const isBlocked =
+    car.blockedDates?.includes(formatted);
+
+  const isBooked =
+    unavailableDates.some((booking) => {
+
+      const pickup = new Date(booking.pickupDate);
+      const returnDate = new Date(booking.returnDate);
+      const current = new Date(formatted);
+
+      return (
+        current >= pickup &&
+        current <= returnDate
+      );
+
+    });
+
+  return isBlocked || isBooked;
+
+}}
 
         />
 
