@@ -30,16 +30,22 @@ const vehicleType = searchParams.get("type");
     fetchCars();
   }, []);
 const filteredCars = cars.filter((car) => {
-
- const matchesLocation =
-  !location ||
-  car.location?.toLowerCase() === location.toLowerCase();
+  const matchesLocation =
+    !location ||
+    car.location?.toLowerCase() === location.toLowerCase();
 
   const matchesType =
-  !vehicleType ||
-  car.vehicleType?.toLowerCase() === vehicleType.toLowerCase();
+    !vehicleType ||
+    car.vehicleType?.toLowerCase() === vehicleType.toLowerCase();
 
-  return matchesLocation && matchesType;
+  const isAvailable =
+    car.status !== "unavailable";
+
+  return (
+    matchesLocation &&
+    matchesType &&
+    isAvailable
+  );
 });
   return (
     

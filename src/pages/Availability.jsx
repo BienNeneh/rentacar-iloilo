@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "react-calendar";
+import toast from "react-hot-toast";
 import "react-calendar/dist/Calendar.css";
 import { db } from "../firebase/firebase";
 
@@ -51,7 +52,7 @@ function Availability() {
       }
     } catch (error) {
       console.error(error);
-      alert("Failed to load availability.");
+      toast.error("Failed to load availability.");
     }
 
     setLoading(false);
@@ -68,10 +69,10 @@ function Availability() {
         blockedDates,
       });
 
-      alert("Availability updated!");
+      toast.success("Availability updated!");
     } catch (error) {
       console.error(error);
-      alert("Failed to save changes.");
+      toast.error("Failed to save changes.");
     }
   };
  const toggleBlockedDate = (date) => {

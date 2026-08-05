@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import iloiloLocations from "../../data/iloiloLocations";
+import toast from "react-hot-toast";
 import {
   FaSearch,
   FaMapMarkerAlt,
@@ -16,27 +17,58 @@ function SearchBar() {
   const [returnDate, setReturnDate] = useState("");
   const [vehicleType, setVehicleType] = useState("Any");
 
-  function handleSearch() {
-    const params = new URLSearchParams();
+ function handleSearch() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    if (location.trim()) {
-      params.append("location", location);
-    }
-
-    if (pickupDate) {
-      params.append("pickup", pickupDate);
-    }
-
-    if (returnDate) {
-      params.append("return", returnDate);
-    }
-
-    if (vehicleType !== "Any") {
-      params.append("type", vehicleType);
-    }
-
-    navigate(`/list-car?${params.toString()}`);
+  // Validate pickup date
+  if (!pickupDate) {
+    toast.error("Please select a pickup date.");
+    return;
   }
+
+  // Validate return date
+  if (!returnDate) {
+    toast.error("Please select a return date.");
+    return;
+  }
+
+  const pickup = new Date(pickupDate);
+  const returnD = new Date(returnDate);
+
+  // Pickup cannot be in the past
+  if (pickup < today) {
+    toast.error("Pickup date cannot be in the past.");
+    return;
+  }
+
+  // Return cannot be before pickup
+  if (returnD < pickup) {
+    toast.error("Return date cannot be earlier than the pickup date.");
+    return;
+  }
+
+  // Same-day rentals are not allowed
+  if (pickup.getTime() === returnD.getTime()) {
+    toast.error("Pickup and return dates cannot be the same.");
+    return;
+  }
+
+  const params = new URLSearchParams();
+
+  if (location.trim()) {
+    params.append("location", location);
+  }
+
+  params.append("pickup", pickupDate);
+  params.append("return", returnDate);
+
+  if (vehicleType !== "Any") {
+    params.append("type", vehicleType);
+  }
+
+  navigate(`/list-car?${params.toString()}`);
+}
 
   return (
     <section className="relative -mt-14 md:-mt-24 z-20">
@@ -83,11 +115,12 @@ function SearchBar() {
                 <FaCalendarAlt className="text-orange-500" />
 
                 <input
-                  type="date"
-                  value={pickupDate}
-                  onChange={(e) => setPickupDate(e.target.value)}
-                  className="w-full bg-transparent outline-none"
-                />
+  type="date"
+  value={pickupDate}
+  min={new Date().toISOString().split("T")[0]}
+  onChange={(e) => setPickupDate(e.target.value)}
+  className="w-full bg-transparent outline-none"
+/>
 
               </div>
             </div>
@@ -102,12 +135,13 @@ function SearchBar() {
 
                 <FaCalendarAlt className="text-orange-500" />
 
-                <input
-                  type="date"
-                  value={returnDate}
-                  onChange={(e) => setReturnDate(e.target.value)}
-                  className="w-full bg-transparent outline-none"
-                />
+               <input
+  type="date"
+  value={returnDate}
+  min={pickupDate || new Date().toISOString().split("T")[0]}
+  onChange={(e) => setReturnDate(e.target.value)}
+  className="w-full bg-transparent outline-none"
+/>
 
               </div>
             </div>
