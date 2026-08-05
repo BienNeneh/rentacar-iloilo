@@ -75,9 +75,15 @@ function Availability() {
       toast.error("Failed to save changes.");
     }
   };
- const toggleBlockedDate = (date) => {
-    const formatted = date.toISOString().split("T")[0];
+  function formatLocalDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
 
+  return `${year}-${month}-${day}`;
+}
+ const toggleBlockedDate = (date) => {
+    const formatted = formatLocalDate(date);
     if (blockedDates.includes(formatted)) {
         setBlockedDates(
             blockedDates.filter((d) => d !== formatted)
@@ -319,8 +325,8 @@ function Availability() {
         <Calendar
             onClickDay={toggleBlockedDate}
             tileClassName={({ date }) => {
-                const formatted =
-                    date.toISOString().split("T")[0];
+                
+                    const formatted = formatLocalDate(date);
 
                 return blockedDates.includes(formatted)
                     ? "blocked-date"

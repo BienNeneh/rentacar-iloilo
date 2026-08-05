@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
+
 import { useNavigate, useSearchParams } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 function ListCar() {
@@ -9,19 +10,27 @@ function ListCar() {
 
 const location = searchParams.get("location");
 const vehicleType = searchParams.get("type");
-  const [cars, setCars] = useState([]);
-
+const pickupDate = searchParams.get("pickup");
+const returnDate = searchParams.get("return");
+const [cars, setCars] = useState([]);
+const [bookings, setBookings] = useState([]);
   useEffect(() => {
     async function fetchCars() {
       try {
         const snapshot = await getDocs(collection(db, "cars"));
-
+        const bookingSnapshot = await getDocs(
+  collection(db, "bookings")
+);
         const carList = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-
+const bookingList = bookingSnapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+}));
         setCars(carList);
+        setBookings(bookingList);
       } catch (error) {
         console.error(error);
       }
@@ -29,6 +38,29 @@ const vehicleType = searchParams.get("type");
 
     fetchCars();
   }, []);
+  let rentalDays = null;
+
+if (pickupDate && returnDate) {
+  const pickup = new Date(pickupDate);
+  const returnD = new Date(returnDate);
+
+  rentalDays = Math.ceil(
+    (returnD - pickup) / (1000 * 60 * 60 * 24)
+  );
+}
+let requestedDates = [];
+
+if (pickupDate && returnDate) {
+  const current = new Date(pickupDate);
+  const end = new Date(returnDate);
+
+  while (current <= end) {
+    requestedDates.push(current.toISOString().split("T")[0]);
+
+    current.setDate(current.getDate() + 1);
+  }
+}
+console.table(bookings);
 const filteredCars = cars.filter((car) => {
   const matchesLocation =
     !location ||
@@ -38,14 +70,46 @@ const filteredCars = cars.filter((car) => {
     !vehicleType ||
     car.vehicleType?.toLowerCase() === vehicleType.toLowerCase();
 
-  const isAvailable =
-    car.status !== "unavailable";
+const isAvailable =
+  (car.status || "available") === "available";
+const matchesRentalDuration =
 
-  return (
-    matchesLocation &&
-    matchesType &&
-    isAvailable
+  rentalDays === null ||
+  (
+    rentalDays >= (car.minRentalDays || 1) &&
+    rentalDays <= (car.maxRentalDays || 365)
   );
+   const hasBlockedDatesOverlap =
+    !car.blockedDates ||
+    !requestedDates.some((date) =>
+      car.blockedDates.includes(date)
+    );
+    const approvedBookings = bookings.filter(
+  (booking) =>
+    booking.carId === car.id &&
+    booking.status === "Approved"
+);
+const hasApprovedBookingConflict =
+  approvedBookings.some((booking) => {
+    const bookingPickup = new Date(booking.pickupDate);
+    const bookingReturn = new Date(booking.returnDate);
+
+    const requestPickup = new Date(pickupDate);
+    const requestReturn = new Date(returnDate);
+
+    return (
+      requestPickup <= bookingReturn &&
+      requestReturn >= bookingPickup
+    );
+  });
+return (
+  matchesLocation &&
+  matchesType &&
+  isAvailable &&
+  matchesRentalDuration &&
+  hasBlockedDatesOverlap &&
+  !hasApprovedBookingConflict
+);
 });
   return (
     
