@@ -6,6 +6,7 @@ function BookingRequestCard({
   booking,
   approveBooking,
   rejectBooking,
+  cancelBooking,
 }) {
   return (
     <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:p-8">
@@ -59,6 +60,7 @@ function BookingRequestCard({
         booking={booking}
         approveBooking={approveBooking}
         rejectBooking={rejectBooking}
+        cancelBooking={cancelBooking}
       />
 
     </div>

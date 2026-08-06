@@ -9,6 +9,7 @@ import {
   getDocs,
   getDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 
 function MyBookings() {
@@ -17,7 +18,29 @@ function MyBookings() {
   useEffect(() => {
     fetchBookings();
   }, []);
+  async function cancelBooking(id) {
 
+  const confirmed = window.confirm(
+    "Are you sure you want to cancel this booking?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+
+    await updateDoc(doc(db, "bookings", id), {
+      status: "Cancelled",
+    });
+
+    await fetchBookings();
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
   async function fetchBookings() {
     try {
       const q = query(
@@ -59,6 +82,9 @@ function MyBookings() {
   const rejectedBookings = bookings.filter(
     (booking) => booking.status === "Rejected"
   ).length;
+const cancelledBookings = bookings.filter(
+  (booking) => booking.status === "Cancelled"
+).length;
 
   return (
     <>
@@ -78,7 +104,7 @@ function MyBookings() {
 
           {/* Statistics */}
 
-          <div className="grid md:grid-cols-3 gap-6 mt-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
 
             <div className="bg-yellow-50 rounded-2xl p-6 shadow">
               <h2 className="text-gray-500">
@@ -109,7 +135,17 @@ function MyBookings() {
                 {rejectedBookings}
               </h1>
             </div>
+<div className="bg-gray-100 rounded-2xl p-6 shadow">
 
+  <h2 className="text-gray-500">
+    Cancelled
+  </h2>
+
+  <h1 className="text-4xl font-bold text-gray-700 mt-2">
+    {cancelledBookings}
+  </h1>
+
+</div>
           </div>
 
           {bookings.length === 0 ? (
@@ -199,10 +235,32 @@ function MyBookings() {
                       <div>
 
                         {booking.status === "Pending" && (
-                          <span className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-semibold">
-                            🟡 Pending
-                          </span>
-                        )}
+
+  <div className="flex flex-col items-end gap-3">
+
+    <span className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-semibold">
+      🟡 Pending
+    </span>
+
+    <button
+      onClick={() => cancelBooking(booking.id)}
+      className="
+        bg-red-500
+        hover:bg-red-600
+        text-white
+        px-5
+        py-2
+        rounded-xl
+        font-semibold
+        transition
+      "
+    >
+      Cancel Booking
+    </button>
+
+  </div>
+
+)}
 
                         {booking.status === "Approved" && (
                           <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold">
@@ -215,7 +273,11 @@ function MyBookings() {
                             🔴 Rejected
                           </span>
                         )}
-
+{booking.status === "Cancelled" && (
+  <span className="bg-gray-200 text-gray-700 px-4 py-2 rounded-full font-semibold">
+    ⚫ Cancelled
+  </span>
+)}
                       </div>
 
                     </div>

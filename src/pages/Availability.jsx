@@ -9,6 +9,10 @@ import {
   doc,
   getDoc,
   updateDoc,
+  collection,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
 
 function Availability() {
@@ -26,6 +30,7 @@ function Availability() {
   const [minRentalDays, setMinRentalDays] = useState(1);
   const [maxRentalDays, setMaxRentalDays] = useState(14);
   const [blockedDates, setBlockedDates] = useState([]);
+  const [approvedBookings, setApprovedBookings] = useState([]);
   useEffect(() => {
     if (id) {
       fetchCar();
@@ -49,6 +54,21 @@ function Availability() {
         setMinRentalDays(car.minRentalDays || 1);
         setMaxRentalDays(car.maxRentalDays || 14);
         setBlockedDates(car.blockedDates || []);
+        // Fetch approved bookings
+const bookingQuery = query(
+  collection(db, "bookings"),
+  where("carId", "==", id),
+  where("status", "==", "Approved")
+);
+
+const bookingSnapshot = await getDocs(bookingQuery);
+
+const bookingList = bookingSnapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+}));
+
+setApprovedBookings(bookingList);
       }
     } catch (error) {
       console.error(error);
@@ -82,18 +102,43 @@ function Availability() {
 
   return `${year}-${month}-${day}`;
 }
- const toggleBlockedDate = (date) => {
+const toggleBlockedDate = (date) => {
+
     const formatted = formatLocalDate(date);
+
+    // Don't allow editing approved booking dates
+    const isBooked = approvedBookings.some((booking) => {
+
+        const pickup = new Date(booking.pickupDate);
+        const bookingReturn = new Date(booking.returnDate);
+        const current = new Date(formatted);
+
+        return (
+            current >= pickup &&
+            current <= bookingReturn
+        );
+
+    });
+
+    if (isBooked) {
+        return;
+    }
+
     if (blockedDates.includes(formatted)) {
+
         setBlockedDates(
             blockedDates.filter((d) => d !== formatted)
         );
+
     } else {
+
         setBlockedDates([
             ...blockedDates,
             formatted,
         ]);
+
     }
+
 };
   if (loading) {
     return (
@@ -325,20 +370,38 @@ function Availability() {
         <Calendar
             onClickDay={toggleBlockedDate}
             tileClassName={({ date }) => {
-                
-                    const formatted = formatLocalDate(date);
 
-                return blockedDates.includes(formatted)
-                    ? "blocked-date"
-                    : null;
-            }}
+    const formatted = formatLocalDate(date);
+
+    const isBlocked =
+        blockedDates.includes(formatted);
+
+    const isBooked =
+        approvedBookings.some((booking) => {
+
+            const pickup = new Date(booking.pickupDate);
+            const bookingReturn = new Date(booking.returnDate);
+            const current = new Date(formatted);
+
+            return (
+                current >= pickup &&
+                current <= bookingReturn
+            );
+
+        });
+
+    return (isBlocked || isBooked)
+        ? "blocked-date"
+        : null;
+
+}}
         />
         </div>
         </div>
          </div>
         <div className="mt-8">
 <h3 className="text-xl font-semibold mb-2">
-    Blocked Dates ({blockedDates.length})
+    Manually Blocked Dates ({blockedDates.length})
 </h3>
     
    {blockedDates.length === 0 ? (
@@ -353,6 +416,8 @@ function Availability() {
         </p>
 
     </div>
+
+    
 ) : (
     <div className="space-y-3">
 
@@ -384,6 +449,68 @@ function Availability() {
 
     </div>
 )}
+<div className="mt-10">
+
+  <h3 className="text-xl font-semibold mb-2">
+    Approved Bookings ({approvedBookings.length})
+  </h3>
+
+  {approvedBookings.length === 0 ? (
+
+    <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+
+      <h3 className="font-semibold text-green-700">
+        No approved bookings yet.
+      </h3>
+
+    </div>
+
+  ) : (
+
+    <div className="space-y-3">
+
+      {approvedBookings.map((booking) => (
+
+        <div
+          key={booking.id}
+          className="flex justify-between items-center bg-white border rounded-xl px-5 py-4"
+        >
+
+          <div>
+
+            <p className="font-semibold">
+              {booking.pickupDate}
+            </p>
+
+            <p className="text-gray-500">
+              to {booking.returnDate}
+            </p>
+
+          </div>
+
+          <span
+  className="
+    bg-red-100
+    text-red-700
+    px-4
+    py-2
+    rounded-full
+    text-sm
+    font-semibold
+  "
+>
+  Booked
+</span>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  )}
+
+</div>
 </div>
     </div>
 

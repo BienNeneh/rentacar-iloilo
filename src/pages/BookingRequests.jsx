@@ -57,7 +57,7 @@ function BookingRequests() {
         status: "Approved",
       });
 
-      fetchBookings();
+      await fetchBookings();
     } catch (error) {
       console.error(error);
     }
@@ -69,7 +69,25 @@ function BookingRequests() {
         status: "Rejected",
       });
 
-      fetchBookings();
+      await fetchBookings();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function cancelBooking(id) {
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this approved booking?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await updateDoc(doc(db, "bookings", id), {
+        status: "Cancelled",
+      });
+
+      await fetchBookings();
     } catch (error) {
       console.error(error);
     }
@@ -143,6 +161,7 @@ function BookingRequests() {
                   booking={booking}
                   approveBooking={approveBooking}
                   rejectBooking={rejectBooking}
+                  cancelBooking={cancelBooking}
                 />
 
               ))}
