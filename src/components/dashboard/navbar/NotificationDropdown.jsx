@@ -24,19 +24,23 @@ function NotificationDropdown({
       }
 
       // Navigate based on notification type
-      switch (notification.type) {
-        case "bookingApproved":
-        case "bookingRejected":
-        case "bookingCancelled":
-          navigate("/my-bookings");
-          break;
+    switch (notification.type) {
+  case "bookingApproved":
+  case "bookingRejected":
+  case "bookingCancelled":
+    navigate("/my-bookings", {
+      state: {
+        bookingId: notification.bookingId,
+      },
+    });
+    break;
 
-        default:
-          console.log(
-            "No navigation destination for notification type:",
-            notification.type
-          );
-      }
+  default:
+    console.log(
+      "No navigation destination for notification type:",
+      notification.type
+    );
+}
     } catch (error) {
       console.error("Notification click error:", error);
     }

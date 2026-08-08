@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import { db, auth } from "../firebase/firebase";
 
@@ -13,11 +14,41 @@ import {
 } from "firebase/firestore";
 
 function MyBookings() {
-  const [bookings, setBookings] = useState([]);
-
+const [bookings, setBookings] = useState([]);
+const location = useLocation();
+const [highlightedBooking, setHighlightedBooking] = useState(null);
   useEffect(() => {
     fetchBookings();
   }, []);
+useEffect(() => {
+  const bookingId = location.state?.bookingId;
+
+  if (!bookingId || bookings.length === 0) {
+    return;
+  }
+
+  const element = document.getElementById(
+    `booking-${bookingId}`
+  );
+
+  if (!element) {
+    return;
+  }
+
+  setHighlightedBooking(bookingId);
+
+  element.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+
+  const timer = setTimeout(() => {
+    setHighlightedBooking(null);
+  }, 3000);
+
+  return () => clearTimeout(timer);
+}, [location.state, bookings]);
+
   async function cancelBooking(id) {
 
   const confirmed = window.confirm(
@@ -188,9 +219,14 @@ const cancelledBookings = bookings.filter(
                 return (
 
                   <div
-                    key={booking.id}
-                    className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8"
-                  >
+  id={`booking-${booking.id}`}
+  key={booking.id}
+  className={`rounded-3xl shadow-lg border p-8 transition-all duration-500 ${
+    highlightedBooking === booking.id
+      ? "bg-orange-50 border-orange-400 ring-4 ring-orange-200"
+      : "bg-white border-gray-100"
+  }`}
+>
 
                     <div className="flex flex-col md:flex-row md:justify-between gap-6">
 
