@@ -3,7 +3,7 @@ import {
   collection,
   query,
   where,
-  getDocs,
+  onSnapshot,
   doc,
   updateDoc,
 } from "firebase/firestore";
@@ -17,79 +17,84 @@ function NotificationBell({ user }) {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // =========================
+  // Real-Time Notification Listener
+  // =========================
+
   useEffect(() => {
-    if (user) {
-      fetchNotifications();
+    if (!user) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
     }
+
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", user.uid)
+    );
+
+    // Listen for real-time changes
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const notificationList = snapshot.docs.map((notificationDoc) => ({
+          id: notificationDoc.id,
+          ...notificationDoc.data(),
+        }));
+
+        // Newest first
+        notificationList.sort(
+          (a, b) =>
+            (b.createdAt?.seconds || 0) -
+            (a.createdAt?.seconds || 0)
+        );
+
+        setNotifications(notificationList);
+
+        // Calculate unread notifications
+        const unread = notificationList.filter(
+          (notification) => !notification.isRead
+        ).length;
+
+        setUnreadCount(unread);
+      },
+      (error) => {
+        console.error("Notification listener error:", error);
+      }
+    );
+
+    // Cleanup listener when user changes/unmounts
+    return () => {
+      unsubscribe();
+    };
   }, [user]);
-
-  // =========================
-  // Fetch Notifications
-  // =========================
-
-  async function fetchNotifications() {
-    try {
-      const q = query(
-        collection(db, "notifications"),
-        where("userId", "==", user.uid)
-      );
-
-      const snapshot = await getDocs(q);
-
-      const notificationList = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      // Newest first
-      notificationList.sort(
-        (a, b) =>
-          (b.createdAt?.seconds || 0) -
-          (a.createdAt?.seconds || 0)
-      );
-
-      setNotifications(notificationList);
-
-      const unread = notificationList.filter(
-        (notification) => !notification.isRead
-      ).length;
-
-      setUnreadCount(unread);
-
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   // =========================
   // Mark Notification as Read
   // =========================
 
   async function markAsRead(notificationId) {
-  try {
-    await updateDoc(
-      doc(db, "notifications", notificationId),
-      {
-        isRead: true,
-      }
-    );
+    try {
+      await updateDoc(
+        doc(db, "notifications", notificationId),
+        {
+          isRead: true,
+        }
+      );
 
-    await fetchNotifications();
+      return true;
 
-    return true;
-
-  } catch (error) {
-    console.error(error);
-    return false;
+    } catch (error) {
+      console.error("Mark notification as read error:", error);
+      return false;
+    }
   }
-}
 
   // =========================
   // Toggle Notification Panel
   // =========================
 
   function toggleNotifications() {
-    fetchNotifications();
     setShowNotifications((prev) => !prev);
   }
 
@@ -99,6 +104,10 @@ function NotificationBell({ user }) {
       className="relative w-11 h-11 rounded-full bg-orange-50 hover:bg-orange-100 transition flex items-center justify-center"
     >
       <FaBell className="text-orange-500 text-lg" />
+
+      {/* =========================
+          Unread Badge
+      ========================= */}
 
       {unreadCount > 0 && (
         <span
@@ -122,12 +131,16 @@ function NotificationBell({ user }) {
         </span>
       )}
 
+      {/* =========================
+          Notification Dropdown
+      ========================= */}
+
       {showNotifications && (
         <NotificationDropdown
-  notifications={notifications}
-  markAsRead={markAsRead}
-  onClose={() => setShowNotifications(false)}
-/>
+          notifications={notifications}
+          markAsRead={markAsRead}
+          onClose={() => setShowNotifications(false)}
+        />
       )}
     </button>
   );
