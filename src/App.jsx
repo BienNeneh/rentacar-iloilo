@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import BookingLifecycle from "./components/system/BookingLifecycle";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -25,7 +25,9 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
+    
     <BrowserRouter>
+      <BookingLifecycle />
      <Toaster
         position="top-right"
         reverseOrder={false}

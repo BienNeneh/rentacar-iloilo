@@ -3,6 +3,7 @@ import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import BookingStats from "../components/booking/BookingStats";
 import BookingRequestCard from "../components/booking/BookingRequestCard";
 import { db, auth } from "../firebase/firebase";
+import { createNotification } from "../services/notificationService";
 
 import {
   collection,
@@ -20,6 +21,10 @@ function BookingRequests() {
   useEffect(() => {
     fetchBookings();
   }, []);
+
+  // =========================
+  // Fetch Bookings
+  // =========================
 
   async function fetchBookings() {
     try {
@@ -46,34 +51,77 @@ function BookingRequests() {
       );
 
       setBookings(bookingList);
+
     } catch (error) {
       console.error(error);
     }
   }
 
+  // =========================
+  // Approve Booking
+  // =========================
+
   async function approveBooking(id) {
     try {
+      const booking = bookings.find((b) => b.id === id);
+
+      if (!booking) return;
+
       await updateDoc(doc(db, "bookings", id), {
         status: "Approved",
       });
 
+      await createNotification({
+        userId: booking.renterId,
+        type: "bookingApproved",
+        title: "Booking Approved",
+        subtitle: `${booking.car?.brand} ${booking.car?.model}`,
+        message: "Your booking has been approved.",
+        bookingId: booking.id,
+        carId: booking.carId,
+      });
+
       await fetchBookings();
+
     } catch (error) {
       console.error(error);
     }
   }
 
+  // =========================
+  // Reject Booking
+  // =========================
+
   async function rejectBooking(id) {
     try {
+      const booking = bookings.find((b) => b.id === id);
+
+      if (!booking) return;
+
       await updateDoc(doc(db, "bookings", id), {
         status: "Rejected",
       });
 
+      await createNotification({
+        userId: booking.renterId,
+        type: "bookingRejected",
+        title: "Booking Rejected",
+        subtitle: `${booking.car?.brand} ${booking.car?.model}`,
+        message: "Unfortunately, your booking request was rejected.",
+        bookingId: booking.id,
+        carId: booking.carId,
+      });
+
       await fetchBookings();
+
     } catch (error) {
       console.error(error);
     }
   }
+
+  // =========================
+  // Cancel Booking
+  // =========================
 
   async function cancelBooking(id) {
     const confirmed = window.confirm(
@@ -83,17 +131,35 @@ function BookingRequests() {
     if (!confirmed) return;
 
     try {
+      const booking = bookings.find((b) => b.id === id);
+
+      if (!booking) return;
+
       await updateDoc(doc(db, "bookings", id), {
         status: "Cancelled",
       });
 
+      await createNotification({
+        userId: booking.renterId,
+        type: "bookingCancelled",
+        title: "Booking Cancelled",
+        subtitle: `${booking.car?.brand} ${booking.car?.model}`,
+        message: "The owner cancelled your booking.",
+        bookingId: booking.id,
+        carId: booking.carId,
+      });
+
       await fetchBookings();
+
     } catch (error) {
       console.error(error);
     }
   }
 
+  // =========================
   // Statistics
+  // =========================
+
   const pendingBookings = bookings.filter(
     (booking) => booking.status === "Pending"
   ).length;
@@ -155,7 +221,6 @@ function BookingRequests() {
             <div className="space-y-8 mt-10">
 
               {activeBookings.map((booking) => (
-
                 <BookingRequestCard
                   key={booking.id}
                   booking={booking}
@@ -163,7 +228,6 @@ function BookingRequests() {
                   rejectBooking={rejectBooking}
                   cancelBooking={cancelBooking}
                 />
-
               ))}
 
               {deletedBookings.length > 0 && (
