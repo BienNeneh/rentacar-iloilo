@@ -157,6 +157,33 @@ function BookingRequests() {
   }
 
   // =========================
+  // Complete Booking
+  // =========================
+
+  async function completeBooking(id) {
+    const confirmed = window.confirm(
+      "Confirm that the vehicle has been returned and the rental is finished?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const booking = bookings.find((b) => b.id === id);
+
+      if (!booking) return;
+
+      await updateDoc(doc(db, "bookings", id), {
+        status: "Completed",
+      });
+
+      await fetchBookings();
+
+    } catch (error) {
+      console.error("Complete Booking Error:", error);
+    }
+  }
+
+  // =========================
   // Statistics
   // =========================
 
@@ -172,9 +199,29 @@ function BookingRequests() {
     (booking) => booking.status === "Rejected"
   ).length;
 
+  // =========================
+  // Active Bookings
+  // =========================
+
   const activeBookings = bookings.filter(
-    (booking) => booking.car
+    (booking) =>
+      booking.car &&
+      booking.status !== "Completed"
   );
+
+  // =========================
+  // Completed Bookings
+  // =========================
+
+  const completedBookings = bookings.filter(
+    (booking) =>
+      booking.car &&
+      booking.status === "Completed"
+  );
+
+  // =========================
+  // Deleted Vehicle Bookings
+  // =========================
 
   const deletedBookings = bookings.filter(
     (booking) => !booking.car
@@ -182,9 +229,8 @@ function BookingRequests() {
 
   return (
     <>
-      <DashboardNavbar />
-
       <div className="min-h-screen bg-gray-100 py-10">
+
         <div className="max-w-6xl mx-auto px-6">
 
           <h1 className="text-4xl font-bold">
@@ -195,13 +241,22 @@ function BookingRequests() {
             Review booking requests for your vehicles.
           </p>
 
+          {/* =========================
+              Booking Statistics
+          ========================= */}
+
           <BookingStats
             pending={pendingBookings}
             approved={approvedBookings}
             rejected={rejectedBookings}
           />
 
+          {/* =========================
+              Booking Content
+          ========================= */}
+
           {activeBookings.length === 0 &&
+          completedBookings.length === 0 &&
           deletedBookings.length === 0 ? (
 
             <div className="bg-white rounded-3xl shadow mt-10 p-10 text-center">
@@ -220,15 +275,46 @@ function BookingRequests() {
 
             <div className="space-y-8 mt-10">
 
+              {/* =========================
+                  Active Booking Requests
+              ========================= */}
+
               {activeBookings.map((booking) => (
+
                 <BookingRequestCard
                   key={booking.id}
                   booking={booking}
                   approveBooking={approveBooking}
                   rejectBooking={rejectBooking}
                   cancelBooking={cancelBooking}
+                  completeBooking={completeBooking}
                 />
+
               ))}
+
+              {/* =========================
+                  Completed Rentals
+              ========================= */}
+
+              {completedBookings.length > 0 && (
+
+                <div className="bg-blue-50 border border-blue-200 rounded-3xl p-6">
+
+                  <h2 className="text-2xl font-bold text-blue-700">
+                    📚 Completed Rentals
+                  </h2>
+
+                  <p className="text-blue-600 mt-2">
+                    {completedBookings.length} completed rental(s).
+                  </p>
+
+                </div>
+
+              )}
+
+              {/* =========================
+                  Deleted Vehicle Bookings
+              ========================= */}
 
               {deletedBookings.length > 0 && (
 
@@ -251,6 +337,7 @@ function BookingRequests() {
           )}
 
         </div>
+
       </div>
     </>
   );

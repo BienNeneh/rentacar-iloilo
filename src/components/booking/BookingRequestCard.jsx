@@ -7,6 +7,7 @@ function BookingRequestCard({
   approveBooking,
   rejectBooking,
   cancelBooking,
+  completeBooking,
 }) {
   return (
     <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:p-8">
@@ -56,12 +57,13 @@ function BookingRequestCard({
 
       <BookingDetails booking={booking} />
 
-      <BookingActions
-        booking={booking}
-        approveBooking={approveBooking}
-        rejectBooking={rejectBooking}
-        cancelBooking={cancelBooking}
-      />
+   <BookingActions
+  booking={booking}
+  approveBooking={approveBooking}
+  rejectBooking={rejectBooking}
+  cancelBooking={cancelBooking}
+  completeBooking={completeBooking}
+/>
 
     </div>
   );
