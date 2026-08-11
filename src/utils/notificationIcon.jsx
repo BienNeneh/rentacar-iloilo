@@ -32,7 +32,12 @@ export function getNotificationIcon(type, isRead) {
           className={isRead ? color : "text-orange-500"}
         />
       );
-
+case "rentalCompleted":
+  return (
+    <FaCheckCircle
+      className={isRead ? color : "text-green-500"}
+    />
+  );
     case "newMessage":
       return (
         <FaCommentDots

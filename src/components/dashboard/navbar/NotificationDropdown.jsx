@@ -64,17 +64,42 @@ function NotificationDropdown({
         onClose();
       }
 
-      // Navigate based on notification type
+      // =========================
+      // Navigate Based on Type
+      // =========================
+
       switch (notification.type) {
+
+        // =========================
+        // Renter Notifications
+        // =========================
+
         case "bookingApproved":
-        case "bookingRejected":
-        case "bookingCancelled":
-          navigate("/my-bookings", {
+case "bookingRejected":
+case "bookingCancelled":
+case "rentalCompleted":
+  navigate("/my-bookings", {
+    state: {
+      bookingId: notification.bookingId,
+    },
+  });
+  break;
+
+        // =========================
+        // Owner Notifications
+        // =========================
+
+        case "bookingRequested":
+          navigate("/booking-requests", {
             state: {
               bookingId: notification.bookingId,
             },
           });
           break;
+
+        // =========================
+        // Unknown Notification
+        // =========================
 
         default:
           console.log(
@@ -82,8 +107,12 @@ function NotificationDropdown({
             notification.type
           );
       }
+
     } catch (error) {
-      console.error("Notification click error:", error);
+      console.error(
+        "Notification click error:",
+        error
+      );
     }
   }
 
@@ -130,113 +159,119 @@ function NotificationDropdown({
 
       ) : (
 
-        ["TODAY", "YESTERDAY", "OLDER"].map((group) => {
+        ["TODAY", "YESTERDAY", "OLDER"].map(
+          (group) => {
 
-          if (groupedNotifications[group].length === 0) {
-            return null;
-          }
+            if (
+              groupedNotifications[group].length === 0
+            ) {
+              return null;
+            }
 
-          return (
-            <div key={group}>
+            return (
+              <div key={group}>
 
-              {/* =========================
-                  Group Header
-              ========================= */}
+                {/* =========================
+                    Group Header
+                ========================= */}
 
-              <div className="px-5 py-3 bg-gray-50 border-b">
-                <p className="text-xs font-bold text-gray-500 tracking-wider">
-                  {group}
-                </p>
-              </div>
+                <div className="px-5 py-3 bg-gray-50 border-b">
+                  <p className="text-xs font-bold text-gray-500 tracking-wider">
+                    {group}
+                  </p>
+                </div>
 
-              {/* =========================
-                  Notifications
-              ========================= */}
+                {/* =========================
+                    Notifications
+                ========================= */}
 
-              {groupedNotifications[group].map(
-                (notification) => (
+                {groupedNotifications[group].map(
+                  (notification) => (
 
-                  <div
-                    key={notification.id}
-                    onClick={() =>
-                      handleNotificationClick(notification)
-                    }
-                    className={`flex items-start gap-4 px-5 py-4 border-b cursor-pointer transition ${
-                      notification.isRead
-                        ? "bg-white hover:bg-gray-50"
-                        : "bg-orange-50 hover:bg-orange-100"
-                    }`}
-                  >
-
-                    {/* =========================
-                        Notification Icon
-                    ========================= */}
-
-                    <div className="text-xl flex-shrink-0 mt-1">
-                      {getNotificationIcon(
-                        notification.type,
+                    <div
+                      key={notification.id}
+                      onClick={() =>
+                        handleNotificationClick(
+                          notification
+                        )
+                      }
+                      className={`flex items-start gap-4 px-5 py-4 border-b cursor-pointer transition ${
                         notification.isRead
-                      )}
-                    </div>
+                          ? "bg-white hover:bg-gray-50"
+                          : "bg-orange-50 hover:bg-orange-100"
+                      }`}
+                    >
 
-                    {/* =========================
-                        Notification Content
-                    ========================= */}
+                      {/* =========================
+                          Notification Icon
+                      ========================= */}
 
-                    <div className="flex-1 text-left">
-
-                      {/* Title */}
-
-                      <h3
-                        className={`${
+                      <div className="text-xl flex-shrink-0 mt-1">
+                        {getNotificationIcon(
+                          notification.type,
                           notification.isRead
-                            ? "font-medium text-gray-500"
-                            : "font-bold text-gray-900"
-                        }`}
-                      >
-                        {notification.title}
-                      </h3>
+                        )}
+                      </div>
 
-                      {/* Subtitle */}
+                      {/* =========================
+                          Notification Content
+                      ========================= */}
 
-                      {notification.subtitle && (
-                        <p className="text-sm font-semibold text-orange-500 mt-1">
-                          {notification.subtitle}
-                        </p>
-                      )}
+                      <div className="flex-1 text-left">
 
-                      {/* Message */}
+                        {/* Title */}
 
-                      {notification.message && (
-                        <p
-                          className={`text-sm mt-1 ${
+                        <h3
+                          className={`${
                             notification.isRead
-                              ? "text-gray-400"
-                              : "text-gray-600"
+                              ? "font-medium text-gray-500"
+                              : "font-bold text-gray-900"
                           }`}
                         >
-                          {notification.message}
-                        </p>
-                      )}
+                          {notification.title}
+                        </h3>
 
-                      {/* Time */}
+                        {/* Subtitle */}
 
-                      <p className="text-xs text-gray-400 mt-2">
-                        {formatTimeAgo(
-                          notification.createdAt
+                        {notification.subtitle && (
+                          <p className="text-sm font-semibold text-orange-500 mt-1">
+                            {notification.subtitle}
+                          </p>
                         )}
-                      </p>
+
+                        {/* Message */}
+
+                        {notification.message && (
+                          <p
+                            className={`text-sm mt-1 ${
+                              notification.isRead
+                                ? "text-gray-400"
+                                : "text-gray-600"
+                            }`}
+                          >
+                            {notification.message}
+                          </p>
+                        )}
+
+                        {/* Time */}
+
+                        <p className="text-xs text-gray-400 mt-2">
+                          {formatTimeAgo(
+                            notification.createdAt
+                          )}
+                        </p>
+
+                      </div>
 
                     </div>
 
-                  </div>
+                  )
+                )}
 
-                )
-              )}
-
-            </div>
-          );
-        })
+              </div>
+            );
+          }
+        )
 
       )}
 

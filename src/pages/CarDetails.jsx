@@ -10,6 +10,7 @@ import CarDescription from "../components/car/CarDescription";
 import CarInfo from "../components/car/CarInfo";
 import FullscreenGallery from "../components/car/FullscreenGallery";
 import toast from "react-hot-toast";
+import { createNotification } from "../services/notificationService";
 import { FaArrowLeft } from "react-icons/fa";
 import {
   addDoc,
@@ -146,93 +147,124 @@ useEffect(() => {
     setCurrentImage(images[prev]);
   };
  const requestBooking = async () => {
-  
-
-    if (!auth.currentUser) {
-
-        toast.error("Please login first.");
-
-        return;
-
-    }
-
-    if (!pickupDate || !returnDate) {
-
-        toast.error("Please select your rental dates.");
-
-        return;
-
-    }
-
-    try {
-// Check for approved bookings of this car
-const bookingQuery = query(
-  collection(db, "bookings"),
-  where("carId", "==", car.id),
-  where("status", "==", "Approved")
-);
-
-const snapshot = await getDocs(bookingQuery);
-
-let hasConflict = false;
-
-snapshot.forEach((doc) => {
-  const booking = doc.data();
-
-  const existingPickup = new Date(booking.pickupDate);
-  const existingReturn = new Date(booking.returnDate);
-
-  const newPickup = new Date(pickupDate);
-  const newReturn = new Date(returnDate);
-
-  const overlaps =
-    newPickup <= existingReturn &&
-    newReturn >= existingPickup;
-
-  if (overlaps) {
-    hasConflict = true;
+  if (!auth.currentUser) {
+    toast.error("Please login first.");
+    return;
   }
-});
 
-if (hasConflict) {
-  toast.error("This vehicle is already booked for the selected dates.");
-  return;
-}
-        await addDoc(
-            collection(db, "bookings"),
-            {
-                carId: car.id,
+  if (!pickupDate || !returnDate) {
+    toast.error("Please select your rental dates.");
+    return;
+  }
 
-                renterId: auth.currentUser.uid,
-                renterEmail: auth.currentUser.email,
-                renterName: auth.currentUser.displayName,
-                ownerId: car.ownerId,
-                ownerEmail: car.ownerEmail,
+  try {
+    // =========================
+    // Check for Approved Bookings
+    // =========================
 
-                pickupDate,
-                returnDate,
+    const bookingQuery = query(
+      collection(db, "bookings"),
+      where("carId", "==", car.id),
+      where("status", "==", "Approved")
+    );
 
-                rentalDays: totalDays,
+    const snapshot = await getDocs(bookingQuery);
 
-                totalPrice: estimatedTotal,
+    let hasConflict = false;
 
-                status: "Pending",
+    snapshot.forEach((bookingDoc) => {
+      const booking = bookingDoc.data();
 
-                createdAt: serverTimestamp(),
-            }
-        );
+      const existingPickup = new Date(
+        booking.pickupDate
+      );
 
-        toast.success("Booking request sent!");
+      const existingReturn = new Date(
+        booking.returnDate
+      );
 
-    } catch (error) {
+      const newPickup = new Date(pickupDate);
+      const newReturn = new Date(returnDate);
 
-        console.error(error);
+      const overlaps =
+        newPickup <= existingReturn &&
+        newReturn >= existingPickup;
 
-        toast.error("Something went wrong.");
+      if (overlaps) {
+        hasConflict = true;
+      }
+    });
 
+    if (hasConflict) {
+      toast.error(
+        "This vehicle is already booked for the selected dates."
+      );
+
+      return;
     }
 
-}
+    // =========================
+    // Create Booking
+    // =========================
+
+    const bookingRef = await addDoc(
+      collection(db, "bookings"),
+      {
+        carId: car.id,
+
+        renterId: auth.currentUser.uid,
+        renterEmail: auth.currentUser.email,
+        renterName:
+          auth.currentUser.displayName || "Renter",
+
+        ownerId: car.ownerId,
+        ownerEmail: car.ownerEmail,
+
+        pickupDate,
+        returnDate,
+
+        rentalDays: totalDays,
+
+        totalPrice: estimatedTotal,
+
+        status: "Pending",
+
+        createdAt: serverTimestamp(),
+      }
+    );
+
+    // =========================
+    // Notify Vehicle Owner
+    // =========================
+
+    await createNotification({
+      userId: car.ownerId,
+      type: "bookingRequested",
+      title: "New Booking Request",
+      subtitle: `${car.brand} ${car.model}`,
+      message:
+        "A renter has requested to book your vehicle.",
+      bookingId: bookingRef.id,
+      carId: car.id,
+    });
+
+    // =========================
+    // Success
+    // =========================
+
+    toast.success("Booking request sent!");
+
+  } catch (error) {
+    console.error(
+      "Booking Request Error:",
+      error
+    );
+
+    toast.error(
+      "Something went wrong."
+    );
+  }
+};
   return (
     <>
     <DashboardNavbar />

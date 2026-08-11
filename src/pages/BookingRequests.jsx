@@ -3,6 +3,7 @@ import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import BookingStats from "../components/booking/BookingStats";
 import BookingRequestCard from "../components/booking/BookingRequestCard";
 import { db, auth } from "../firebase/firebase";
+import { useLocation } from "react-router-dom";
 import { createNotification } from "../services/notificationService";
 
 import {
@@ -16,11 +17,45 @@ import {
 } from "firebase/firestore";
 
 function BookingRequests() {
+  const location = useLocation();
+const [highlightedBooking, setHighlightedBooking] = useState(null);
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
     fetchBookings();
   }, []);
+  // =========================
+// Notification Booking Highlight
+// =========================
+
+useEffect(() => {
+  const bookingId = location.state?.bookingId;
+
+  if (!bookingId || bookings.length === 0) {
+    return;
+  }
+
+  const element = document.getElementById(
+    `booking-${bookingId}`
+  );
+
+  if (!element) {
+    return;
+  }
+
+  setHighlightedBooking(bookingId);
+
+  element.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+
+  const timer = setTimeout(() => {
+    setHighlightedBooking(null);
+  }, 3000);
+
+  return () => clearTimeout(timer);
+}, [location.state, bookings]);
 
   // =========================
   // Fetch Bookings
@@ -160,29 +195,51 @@ function BookingRequests() {
   // Complete Booking
   // =========================
 
-  async function completeBooking(id) {
-    const confirmed = window.confirm(
-      "Confirm that the vehicle has been returned and the rental is finished?"
-    );
+  // =========================
+// Complete Booking
+// =========================
 
-    if (!confirmed) return;
+// =========================
+// Complete Booking
+// =========================
 
-    try {
-      const booking = bookings.find((b) => b.id === id);
+async function completeBooking(id) {
+  const confirmed = window.confirm(
+    "Confirm that the vehicle has been returned and the rental is finished?"
+  );
 
-      if (!booking) return;
+  if (!confirmed) return;
 
-      await updateDoc(doc(db, "bookings", id), {
-        status: "Completed",
-      });
+  try {
+    const booking = bookings.find((b) => b.id === id);
 
-      await fetchBookings();
+    if (!booking) return;
 
-    } catch (error) {
-      console.error("Complete Booking Error:", error);
-    }
+    // Update booking status
+    await updateDoc(doc(db, "bookings", id), {
+      status: "Completed",
+    });
+
+    // Notify the renter
+    await createNotification({
+      userId: booking.renterId,
+      type: "rentalCompleted",
+      title: "Rental Completed",
+      subtitle: `${booking.car?.brand || ""} ${
+        booking.car?.model || ""
+      }`,
+      message: "Your rental has been marked as completed.",
+      bookingId: booking.id,
+      carId: booking.carId,
+    });
+
+    // Refresh bookings
+    await fetchBookings();
+
+  } catch (error) {
+    console.error("Complete Booking Error:", error);
   }
-
+}
   // =========================
   // Statistics
   // =========================
@@ -229,6 +286,7 @@ function BookingRequests() {
 
   return (
     <>
+        <DashboardNavbar />
       <div className="min-h-screen bg-gray-100 py-10">
 
         <div className="max-w-6xl mx-auto px-6">
@@ -279,18 +337,29 @@ function BookingRequests() {
                   Active Booking Requests
               ========================= */}
 
-              {activeBookings.map((booking) => (
+            {activeBookings.map((booking) => (
 
-                <BookingRequestCard
-                  key={booking.id}
-                  booking={booking}
-                  approveBooking={approveBooking}
-                  rejectBooking={rejectBooking}
-                  cancelBooking={cancelBooking}
-                  completeBooking={completeBooking}
-                />
+  <div
+    key={booking.id}
+    id={`booking-${booking.id}`}
+    className={`rounded-3xl transition-all duration-500 ${
+      highlightedBooking === booking.id
+        ? "ring-4 ring-orange-400 bg-orange-50"
+        : ""
+    }`}
+  >
 
-              ))}
+    <BookingRequestCard
+      booking={booking}
+      approveBooking={approveBooking}
+      rejectBooking={rejectBooking}
+      cancelBooking={cancelBooking}
+      completeBooking={completeBooking}
+    />
+
+  </div>
+
+))}
 
               {/* =========================
                   Completed Rentals
