@@ -22,8 +22,8 @@ const [highlightedBooking, setHighlightedBooking] = useState(null);
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
-    fetchBookings();
-  }, []);
+  fetchBookings();
+}, [location.state?.bookingId]);
   // =========================
 // Notification Booking Highlight
 // =========================
@@ -127,32 +127,41 @@ useEffect(() => {
   // Reject Booking
   // =========================
 
-  async function rejectBooking(id) {
-    try {
-      const booking = bookings.find((b) => b.id === id);
+ async function rejectBooking(id) {
+  try {
+    const booking = bookings.find((b) => b.id === id);
 
-      if (!booking) return;
+    if (!booking) return;
 
-      await updateDoc(doc(db, "bookings", id), {
-        status: "Rejected",
-      });
+    // Update booking status in Firestore
+    await updateDoc(doc(db, "bookings", id), {
+      status: "Rejected",
+    });
 
-      await createNotification({
-        userId: booking.renterId,
-        type: "bookingRejected",
-        title: "Booking Rejected",
-        subtitle: `${booking.car?.brand} ${booking.car?.model}`,
-        message: "Unfortunately, your booking request was rejected.",
-        bookingId: booking.id,
-        carId: booking.carId,
-      });
+    // Immediately update the local UI
+    setBookings((prevBookings) =>
+      prevBookings.map((b) =>
+        b.id === id
+          ? { ...b, status: "Rejected" }
+          : b
+      )
+    );
 
-      await fetchBookings();
+    // Notify the renter
+    await createNotification({
+      userId: booking.renterId,
+      type: "bookingRejected",
+      title: "Booking Rejected",
+      subtitle: `${booking.car?.brand} ${booking.car?.model}`,
+      message: "Unfortunately, your booking request was rejected.",
+      bookingId: booking.id,
+      carId: booking.carId,
+    });
 
-    } catch (error) {
-      console.error(error);
-    }
+  } catch (error) {
+    console.error("Reject Booking Error:", error);
   }
+}
 
   // =========================
   // Cancel Booking
@@ -260,12 +269,24 @@ async function completeBooking(id) {
   // Active Bookings
   // =========================
 
-  const activeBookings = bookings.filter(
-    (booking) =>
-      booking.car &&
-      booking.status !== "Completed"
-  );
+ const activeBookings = bookings.filter(
+  (booking) =>
+    booking.car &&
+    (booking.status === "Pending" ||
+      booking.status === "Approved")
+);
 
+const rejectedBookingsList = bookings.filter(
+  (booking) =>
+    booking.car &&
+    booking.status === "Rejected"
+);
+
+const cancelledBookings = bookings.filter(
+  (booking) =>
+    booking.car &&
+    booking.status === "Cancelled"
+);
   // =========================
   // Completed Bookings
   // =========================
@@ -313,9 +334,11 @@ async function completeBooking(id) {
               Booking Content
           ========================= */}
 
-          {activeBookings.length === 0 &&
-          completedBookings.length === 0 &&
-          deletedBookings.length === 0 ? (
+         {activeBookings.length === 0 &&
+ completedBookings.length === 0 &&
+ rejectedBookingsList.length === 0 &&
+ cancelledBookings.length === 0 &&
+ deletedBookings.length === 0 ? (
 
             <div className="bg-white rounded-3xl shadow mt-10 p-10 text-center">
 
@@ -337,6 +360,18 @@ async function completeBooking(id) {
                   Active Booking Requests
               ========================= */}
 
+{activeBookings.length > 0 && (
+  <div>
+    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+      📋 Active Booking Requests
+    </h2>
+
+    <p className="text-gray-500 mt-2">
+      Pending requests and approved rentals.
+    </p>
+  </div>
+)}
+
             {activeBookings.map((booking) => (
 
   <div
@@ -356,10 +391,90 @@ async function completeBooking(id) {
       cancelBooking={cancelBooking}
       completeBooking={completeBooking}
     />
+    
 
   </div>
 
 ))}
+
+{/* =========================
+    Rejected Bookings
+========================= */}
+
+{rejectedBookingsList.length > 0 && (
+  <div>
+    <div className="mb-4">
+      <h2 className="text-2xl sm:text-3xl font-bold text-red-700">
+        🔴 Rejected Bookings
+      </h2>
+
+      <p className="text-gray-500 mt-2">
+        {rejectedBookingsList.length} rejected booking(s).
+      </p>
+    </div>
+
+    <div className="space-y-6">
+      {rejectedBookingsList.map((booking) => (
+        <div
+          key={booking.id}
+          id={`booking-${booking.id}`}
+          className={`rounded-3xl transition-all duration-500 ${
+            highlightedBooking === booking.id
+              ? "ring-4 ring-orange-400 bg-orange-50"
+              : ""
+          }`}
+        >
+          <BookingRequestCard
+            booking={booking}
+            approveBooking={approveBooking}
+            rejectBooking={rejectBooking}
+            cancelBooking={cancelBooking}
+            completeBooking={completeBooking}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+{/* =========================
+    Cancelled Bookings
+========================= */}
+
+{cancelledBookings.length > 0 && (
+  <div>
+    <div className="mb-4">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-700">
+        ⚫ Cancelled Bookings
+      </h2>
+
+      <p className="text-gray-500 mt-2">
+        {cancelledBookings.length} cancelled booking(s).
+      </p>
+    </div>
+
+    <div className="space-y-6">
+      {cancelledBookings.map((booking) => (
+        <div
+          key={booking.id}
+          id={`booking-${booking.id}`}
+          className={`rounded-3xl transition-all duration-500 ${
+            highlightedBooking === booking.id
+              ? "ring-4 ring-orange-400 bg-orange-50"
+              : ""
+          }`}
+        >
+          <BookingRequestCard
+            booking={booking}
+            approveBooking={approveBooking}
+            rejectBooking={rejectBooking}
+            cancelBooking={cancelBooking}
+            completeBooking={completeBooking}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
               {/* =========================
                   Completed Rentals

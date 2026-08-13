@@ -1,5 +1,4 @@
 function BookingStatusBadge({ status }) {
-
   switch (status) {
 
     case "Pending":
@@ -30,11 +29,16 @@ function BookingStatusBadge({ status }) {
         </span>
       );
 
+    case "Completed":
+      return (
+        <span className="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full font-semibold">
+          ✅ Completed
+        </span>
+      );
+
     default:
       return null;
-
   }
-
 }
 
 export default BookingStatusBadge;

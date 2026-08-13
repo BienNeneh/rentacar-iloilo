@@ -85,6 +85,14 @@ case "rentalCompleted":
   });
   break;
 
+case "bookingCancelledByRenter":
+  navigate("/booking-requests", {
+    state: {
+      bookingId: notification.bookingId,
+    },
+  });
+  break;
+
         // =========================
         // Owner Notifications
         // =========================

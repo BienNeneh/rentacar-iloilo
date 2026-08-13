@@ -5,19 +5,25 @@
 Community-based peer-to-peer car rental platform for Iloilo.
 
 Owners can:
+
 - List vehicles
 - Manage vehicle information
 - Manage availability
 - Accept booking requests
 - Reject booking requests
 - Cancel approved bookings
+- Mark rentals as completed
 - Receive booking notifications
 
 Renters can:
+
 - Browse available vehicles
 - Request bookings
 - Cancel pending bookings
 - Track booking status
+- View upcoming bookings
+- View active rentals
+- View completed rentals
 - Receive booking notifications
 
 ---
@@ -90,7 +96,7 @@ Important fields:
 ## bookings
 
 Purpose:
-Stores rental requests.
+Stores rental requests and permanent booking history.
 
 Important fields:
 
@@ -113,6 +119,7 @@ Booking Status Values:
 - Approved
 - Rejected
 - Cancelled
+- Completed
 
 ---
 
@@ -135,6 +142,7 @@ Important fields:
 
 Notification Types:
 
+- bookingRequested
 - bookingApproved
 - bookingRejected
 - bookingCancelled
@@ -143,93 +151,78 @@ Notification Types:
 
 # Authentication
 
-✅ Register
-
-✅ Login
-
-✅ Protected Routes
+- [x] Register
+- [x] Login
+- [x] Protected Routes
 
 ---
 
 # Cars
 
-✅ Add Car
-
-✅ Edit Car
-
-✅ Delete Car
-
-✅ My Cars
-
-✅ Browse Cars
-
-✅ Car Details
+- [x] Add Car
+- [x] Edit Car
+- [x] Delete Car
+- [x] My Cars
+- [x] Browse Cars
+- [x] Car Details
 
 ---
 
 # Booking System
 
-✅ Booking Request
-
-✅ Approve Booking
-
-✅ Reject Booking
-
-✅ Renter Cancel Pending Booking
-
-✅ Owner Cancel Approved Booking
-
-✅ My Bookings
-
-✅ Booking Status Synchronization
+- [x] Booking Request
+- [x] Approve Booking
+- [x] Reject Booking
+- [x] Renter Cancel Pending Booking
+- [x] Owner Cancel Approved Booking
+- [x] My Bookings
+- [x] Booking Status Synchronization
+- [x] Upcoming Bookings
+- [x] Active Rentals
+- [x] Manual Mark as Completed
+- [x] Completion Confirmation
+- [x] Completed Rental History
+- [x] Completed Bookings Permanently Stored
 
 ---
 
 # Availability
 
-✅ Manual blocked dates
-
-✅ Approved bookings shown on owner calendar
-
-✅ Approved bookings shown on renter calendar
-
-✅ Blocked dates cannot be selected
-
-✅ Approved booking dates cannot be selected
-
-✅ Automatically free dates after booking cancellation
+- [x] Manual blocked dates
+- [x] Approved bookings shown on owner calendar
+- [x] Approved bookings shown on renter calendar
+- [x] Blocked dates cannot be selected
+- [x] Approved booking dates cannot be selected
+- [x] Automatically free dates after booking cancellation
 
 ---
 
 # Notification System
 
-✅ Notification Service
-
-✅ Modular Notification Components
-
-✅ Notification Dropdown
-
-✅ Notification Bell Badge
-
-✅ Read / Unread Notifications
-
-✅ Notification History
-
-✅ Smart Notification Icons
-
-✅ Relative Time (Just now / Minutes ago / Yesterday)
-
-✅ Notification Types
-
-✅ Vehicle Subtitle
-
-✅ Unread Counter
+- [x] Notification Service
+- [x] Modular Notification Components
+- [x] Notification Dropdown
+- [x] Notification Bell Badge
+- [x] Read / Unread Notifications
+- [x] Notification History
+- [x] Smart Notification Icons
+- [x] Relative Time (Just now / Minutes ago / Yesterday)
+- [x] Notification Types
+- [x] Vehicle Subtitle
+- [x] Unread Counter
+- [x] Notification Grouping (Today / Yesterday / Older)
+- [x] Clickable Notifications
+- [x] Notification Navigation
+- [x] Exact Booking Highlighting
+- [x] Owner New Booking Request Notifications
 
 ---
 
 # Architecture Improvements
 
-✅ Navbar refactored into modular components
+- [x] Navbar component refactor
+
+Components:
 
 - NavbarLogo
 - DesktopNavigation
@@ -238,57 +231,67 @@ Notification Types:
 - NotificationDropdown
 - UserMenu
 
-✅ Notification system extracted into Notification Service
+- [x] Notification system extracted into Notification Service
 
-✅ Reusable utility functions
+- [x] Reusable utility functions
+
+Utilities:
 
 - formatTimeAgo.js
 - notificationIcon.jsx
+- dateUtils.js
 
 ---
 
 # Deployment
 
-✅ GitHub Repository
-
-✅ Vercel Deployment
-
-✅ React Router refresh fixed (No more 404 on page refresh)
+- [x] GitHub Repository
+- [x] Vercel Deployment
+- [x] React Router refresh fixed (No more 404 on page refresh)
 
 ---
 
 # Current Sprint
 
-## Version 0.8.1 — "UI & Architecture Polish"
+## Version 0.8.4 — "Notification Completion"
 
 ### Completed
 
-- [x] Navbar component refactor
-- [x] Notification Service
-- [x] Notification History
-- [x] Read / Unread notifications
-- [x] Notification badge counter
-- [x] Smart notification icons
-- [x] Relative timestamps
-- [x] Vehicle subtitle in notifications
-- [x] Notification types
-- [x] Modular notification components
-- [x] Utility functions for notifications
-- [x] Booking approval notifications
-- [x] Booking rejection notifications
-- [x] Booking cancellation notifications
+- [x] Renter cancellation → Owner notification
+- [x] Renter cancellation → Owner booking navigation
+- [x] Exact cancelled booking highlighting
+- [x] Rental completion → Renter notification
+- [x] Rental completion notification icon
+- [x] Rental completion → Renter booking navigation
+- [x] Exact completed booking highlighting
+- [x] Booking approval → Renter notification
+- [x] Booking approval → Renter booking navigation
+- [x] Real-time notifications
+- [x] Notification grouping
+- [x] Notification read / unread behavior
+- [x] Notification dropdown navigation
+- [x] Booking Requests refresh when navigating with booking ID
+- [x] `bookingCancelledByRenter` notification type
 
 ### Remaining
 
-- [ ] Clickable notifications
-- [ ] Group notifications (Today / Yesterday / Older)
-- [ ] Real-time notifications (Firestore onSnapshot)
-- [ ] Booking History
-- [ ] Automatically archive completed rentals
+- [ ] Booking Rejected → Renter notification/navigation
+- [ ] Owner cancellation → Renter notification/navigation
+- [ ] Final regression testing
+- [ ] Vercel production testing
 
 ---
 
+## Version 0.8.4 Status
+
+🟡 Testing / Stabilization
 # Future Roadmap
+
+## Version 0.8.4
+
+- Renter cancellation notifications
+- Rental completion notifications
+- Real-time Notifications
 
 ## Version 0.9
 
@@ -296,7 +299,6 @@ Notification Types:
 - Messaging System
 - Reviews
 - Admin Panel
-- Real-time Notifications
 
 ---
 
@@ -307,17 +309,20 @@ Notification Types:
 - blockedDates are only for manual owner blocks.
 - Approved bookings are read from the bookings collection.
 - Cancelled bookings immediately free reserved dates.
+- Completed bookings remain permanently stored.
 - Firestore is the single source of truth.
 - Notification documents are never deleted.
 - Notifications use a reusable Notification Service.
 - Notification types determine icon and behavior.
+- Notifications can navigate to related bookings.
+- Rental completion is manually confirmed by the owner.
 - React Router is configured for Vercel SPA routing.
 
 ---
 
 # Latest Stable Version
 
-**Version 0.8.1 — "UI & Architecture Polish"**
+**Version 0.8.3 — "Booking History & Manual Completion"**
 
 Current Status:
 
@@ -331,7 +336,16 @@ Latest Major Features:
 - Smart Notification Icons
 - Relative Notification Timestamps
 - Vehicle-aware Notifications
+- Notification Grouping
+- Clickable Notifications
+- Exact Booking Navigation
+- Exact Booking Highlighting
+- Owner New Booking Request Notifications
 - Booking Approval / Rejection / Cancellation Notifications
 - Availability Synchronization
 - Booking Management
+- Upcoming / Active / Completed Booking Organization
+- Manual Rental Completion
+- Completion Confirmation
+- Permanent Booking History
 - Vercel SPA Routing Fix

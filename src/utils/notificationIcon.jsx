@@ -26,12 +26,13 @@ export function getNotificationIcon(type, isRead) {
         />
       );
 
-    case "bookingCancelled":
-      return (
-        <FaBan
-          className={isRead ? color : "text-orange-500"}
-        />
-      );
+   case "bookingCancelled":
+case "bookingCancelledByRenter":
+  return (
+    <FaBan
+      className={isRead ? color : "text-orange-500"}
+    />
+  );
 case "rentalCompleted":
   return (
     <FaCheckCircle
