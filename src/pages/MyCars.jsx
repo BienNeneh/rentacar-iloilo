@@ -69,181 +69,218 @@ function MyCars() {
     <>
       <DashboardNavbar />
 
-      <div className="min-h-screen bg-gray-100 p-10">
+      <div className="min-h-screen bg-gray-100 py-6 sm:py-8 lg:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
 
-        <div className="flex justify-between items-center mb-10">
+          {/* =========================
+              Page Header
+          ========================= */}
 
-          <div>
-            <h1 className="text-4xl font-bold">
-              My Cars
-            </h1>
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between mb-8 sm:mb-10">
 
-            <p className="text-gray-500 mt-2">
-              Manage all your listed vehicles.
-            </p>
-          </div>
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
+                My Cars
+              </h1>
 
-          <button
-            onClick={() => navigate("/add-car")}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition"
-          >
-            + Add New Car
-          </button>
-
-        </div>
-
-        {cars.length === 0 ? (
-
-          <div className="bg-white rounded-3xl shadow-lg p-16 text-center mt-8">
-
-            <div className="text-7xl mb-6">
-              🚗
+              <p className="text-gray-500 mt-2 text-sm sm:text-base">
+                Manage all your listed vehicles.
+              </p>
             </div>
-
-            <h2 className="text-3xl font-bold">
-              No Cars Listed Yet
-            </h2>
-
-            <p className="text-gray-500 mt-4 max-w-md mx-auto">
-              Start earning by listing your first vehicle.
-              It only takes a minute to get started.
-            </p>
 
             <button
               onClick={() => navigate("/add-car")}
-              className="mt-8 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition shadow-lg"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition"
             >
-              + Add Your First Car
+              + Add New Car
             </button>
 
           </div>
 
-        ) : (
+          {/* =========================
+              No Cars
+          ========================= */}
 
-          <div className="grid md:grid-cols-3 gap-6">
+          {cars.length === 0 ? (
 
-            {cars.map((car) => (
+            <div className="bg-white rounded-3xl shadow-lg px-6 py-10 sm:px-10 sm:py-14 lg:p-16 text-center">
 
-              <div
-                key={car.id}
-                className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition duration-300"
+              <div className="text-6xl sm:text-7xl mb-5 sm:mb-6">
+                🚗
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                No Cars Listed Yet
+              </h2>
+
+              <p className="text-gray-500 mt-4 max-w-md mx-auto text-sm sm:text-base leading-relaxed">
+                Start earning by listing your first vehicle.
+                It only takes a minute to get started.
+              </p>
+
+              <button
+                onClick={() => navigate("/add-car")}
+                className="w-full sm:w-auto mt-7 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition shadow-lg"
               >
+                + Add Your First Car
+              </button>
 
-                <img
-                  src={car.image}
-                  alt={car.brand}
-                  className="w-full h-52 object-cover"
-                />
+            </div>
 
-                <div className="p-6">
+          ) : (
 
-                  {/* Status Badge */}
+            /* =========================
+                Car Grid
+            ========================= */
 
-                  <div
-                    className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold ${
-                      (car.status || "available") === "available"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+
+              {cars.map((car) => (
+
+                <div
+                  key={car.id}
+                  className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300"
+                >
+
+                  {/* Car Image */}
+
+                  <img
+                    src={car.image}
+                    alt={`${car.brand} ${car.model}`}
+                    className="w-full h-52 sm:h-48 lg:h-52 object-cover"
+                  />
+
+                  <div className="p-5 sm:p-6">
+
+                    {/* Status */}
 
                     <div
-                      className={`w-2.5 h-2.5 rounded-full ${
+                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold ${
                         (car.status || "available") === "available"
-                          ? "bg-green-500"
-                          : "bg-red-500"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
                       }`}
-                    ></div>
+                    >
 
-                    {(car.status || "available") === "available"
-                      ? "Available"
-                      : "Unavailable"}
+                      <div
+                        className={`w-2.5 h-2.5 rounded-full ${
+                          (car.status || "available") === "available"
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
+                      />
 
-                  </div>
+                      {(car.status || "available") === "available"
+                        ? "Available"
+                        : "Unavailable"}
 
-                  <h2 className="text-3xl font-bold mt-2">
-                    {car.brand} {car.model}
-                  </h2>
+                    </div>
 
-                  <div className="mt-4 space-y-3">
+                    {/* Car Name */}
 
-                    <div className="flex items-center gap-2 text-gray-500">
-                      <FaCarSide className="text-blue-500" />
-                      <span>
-                        {car.vehicleType} • {car.year}
+                    <h2 className="text-2xl sm:text-3xl font-bold mt-3 text-gray-900 break-words">
+                      {car.brand} {car.model}
+                    </h2>
+
+                    {/* Car Information */}
+
+                    <div className="mt-4 space-y-3">
+
+                      <div className="flex items-start gap-2 text-gray-500">
+                        <FaCarSide className="text-blue-500 mt-1 shrink-0" />
+
+                        <span className="break-words">
+                          {car.vehicleType} • {car.year}
+                        </span>
+                      </div>
+
+                      <div className="flex items-start gap-2 text-gray-600">
+                        <FaMapMarkerAlt className="text-red-500 mt-1 shrink-0" />
+
+                        <span className="break-words">
+                          {car.location}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-4 text-gray-600">
+
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FaCog className="text-gray-500 shrink-0" />
+
+                          <span className="truncate">
+                            {car.transmission}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <FaUsers className="text-gray-500" />
+
+                          <span>
+                            {car.seats} Seats
+                          </span>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                    {/* Price */}
+
+                    <p className="mt-6">
+
+                      <span className="text-2xl sm:text-3xl font-bold text-blue-600">
+                        ₱{Number(car.price).toLocaleString()}
                       </span>
+
+                      <span className="text-gray-500 font-medium">
+                        /day
+                      </span>
+
+                    </p>
+
+                    {/* Actions */}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 mt-6">
+
+                      <button
+                        onClick={() =>
+                          navigate(`/manage-car/${car.id}`)
+                        }
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition"
+                      >
+                        ⚙ Manage
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          navigate(`/edit-car/${car.id}`)
+                        }
+                        className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+                      >
+                        ✏ Edit
+                      </button>
+
+                      <button
+                        onClick={() => deleteCar(car.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold transition"
+                      >
+                        🗑 Delete
+                      </button>
+
                     </div>
-
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <FaMapMarkerAlt className="text-red-500" />
-                      <span>{car.location}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between text-gray-600">
-
-                      <div className="flex items-center gap-2">
-                        <FaCog className="text-gray-500" />
-                        <span>{car.transmission}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <FaUsers className="text-gray-500" />
-                        <span>{car.seats} Seats</span>
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                  <p className="mt-6">
-
-                    <span className="text-3xl font-bold text-blue-600">
-                      ₱{Number(car.price).toLocaleString()}
-                    </span>
-
-                    <span className="text-gray-500 font-medium">
-                      /day
-                    </span>
-
-                  </p>
-
-                  <div className="grid grid-cols-3 gap-3 mt-6">
-
-                    <button
-                      onClick={() => navigate(`/manage-car/${car.id}`)}
-                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition"
-                    >
-                      ⚙ Manage
-                    </button>
-
-                    <button
-                      onClick={() => navigate(`/edit-car/${car.id}`)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
-                    >
-                      ✏ Edit
-                    </button>
-
-                    <button
-                      onClick={() => deleteCar(car.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold transition"
-                    >
-                      🗑 Delete
-                    </button>
 
                   </div>
 
                 </div>
 
-              </div>
+              ))}
 
-            ))}
+            </div>
 
-          </div>
+          )}
 
-        )}
-
+        </div>
       </div>
-
     </>
   );
 }

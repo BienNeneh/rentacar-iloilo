@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import iloiloLocations from "../data/iloiloLocations";
 import vehicleTypes from "../data/vehicleTypes";
 import ImageUploader from "../components/upload/ImageUploader";
+import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 
 function AddCar()  {
 const [location, setLocation] = useState("");
@@ -69,8 +70,11 @@ async function handleSubmit(e) {
   setLoading(false);
 }
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-10">
+    <>
+      <DashboardNavbar />
+
+     <div className="min-h-screen bg-gray-100 py-6 sm:py-10">
+  <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-5 sm:p-8 lg:p-10">
 
         <h1 className="text-4xl font-bold mb-2">
           Add New Car
@@ -331,8 +335,9 @@ async function handleSubmit(e) {
 
         </form>
 
+       </div>
       </div>
-    </div>
+    </>
   );
 }
 
