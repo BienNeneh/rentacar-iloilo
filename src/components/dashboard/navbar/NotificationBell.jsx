@@ -33,14 +33,15 @@ function NotificationBell({ user }) {
       where("userId", "==", user.uid)
     );
 
-    // Listen for real-time changes
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const notificationList = snapshot.docs.map((notificationDoc) => ({
-          id: notificationDoc.id,
-          ...notificationDoc.data(),
-        }));
+        const notificationList = snapshot.docs.map(
+          (notificationDoc) => ({
+            id: notificationDoc.id,
+            ...notificationDoc.data(),
+          })
+        );
 
         // Newest first
         notificationList.sort(
@@ -59,11 +60,13 @@ function NotificationBell({ user }) {
         setUnreadCount(unread);
       },
       (error) => {
-        console.error("Notification listener error:", error);
+        console.error(
+          "Notification listener error:",
+          error
+        );
       }
     );
 
-    // Cleanup listener when user changes/unmounts
     return () => {
       unsubscribe();
     };
@@ -83,9 +86,12 @@ function NotificationBell({ user }) {
       );
 
       return true;
-
     } catch (error) {
-      console.error("Mark notification as read error:", error);
+      console.error(
+        "Mark notification as read error:",
+        error
+      );
+
       return false;
     }
   }
@@ -99,41 +105,54 @@ function NotificationBell({ user }) {
   }
 
   return (
-    <button
-      onClick={toggleNotifications}
-      className="relative w-11 h-11 rounded-full bg-orange-50 hover:bg-orange-100 transition flex items-center justify-center"
-    >
-      <FaBell className="text-orange-500 text-lg" />
+    <div className="relative">
 
-      {/* =========================
-          Unread Badge
-      ========================= */}
+      {/* Notification Button */}
 
-      {unreadCount > 0 && (
-        <span
-          className="
-            absolute
-            -top-1
-            -right-1
-            w-5
-            h-5
-            rounded-full
-            bg-red-500
-            text-white
-            text-xs
-            font-bold
-            flex
-            items-center
-            justify-center
-          "
-        >
-          {unreadCount}
-        </span>
-      )}
+      <button
+        type="button"
+        onClick={toggleNotifications}
+        className="
+          relative
+          w-11
+          h-11
+          rounded-full
+          bg-orange-50
+          hover:bg-orange-100
+          transition
+          flex
+          items-center
+          justify-center
+        "
+      >
+        <FaBell className="text-orange-500 text-lg" />
 
-      {/* =========================
-          Notification Dropdown
-      ========================= */}
+        {/* Unread Badge */}
+
+        {unreadCount > 0 && (
+          <span
+            className="
+              absolute
+              -top-1
+              -right-1
+              w-5
+              h-5
+              rounded-full
+              bg-red-500
+              text-white
+              text-xs
+              font-bold
+              flex
+              items-center
+              justify-center
+            "
+          >
+            {unreadCount}
+          </span>
+        )}
+      </button>
+
+      {/* Notification Dropdown */}
 
       {showNotifications && (
         <NotificationDropdown
@@ -142,7 +161,8 @@ function NotificationBell({ user }) {
           onClose={() => setShowNotifications(false)}
         />
       )}
-    </button>
+
+    </div>
   );
 }
 

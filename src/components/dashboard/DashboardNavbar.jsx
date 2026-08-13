@@ -81,15 +81,26 @@ function DashboardNavbar() {
             </div>
 
           </div>
+{/* Mobile Actions */}
 
-          {/* Mobile Button */}
+<div className="lg:hidden flex items-center gap-2">
 
-          <button
-            onClick={() => setMenuOpen(true)}
-            className="lg:hidden w-11 h-11 rounded-full bg-orange-50 flex items-center justify-center text-orange-500"
-          >
-            <FaBars />
-          </button>
+  {/* Mobile Notification */}
+
+  {user && (
+    <NotificationBell user={user} />
+  )}
+
+  {/* Mobile Menu */}
+
+  <button
+    onClick={() => setMenuOpen(true)}
+    className="w-11 h-11 rounded-full bg-orange-50 flex items-center justify-center text-orange-500"
+  >
+    <FaBars />
+  </button>
+
+</div>
 
         </div>
 

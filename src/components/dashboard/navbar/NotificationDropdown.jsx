@@ -75,23 +75,23 @@ function NotificationDropdown({
         // =========================
 
         case "bookingApproved":
-case "bookingRejected":
-case "bookingCancelled":
-case "rentalCompleted":
-  navigate("/my-bookings", {
-    state: {
-      bookingId: notification.bookingId,
-    },
-  });
-  break;
+        case "bookingRejected":
+        case "bookingCancelled":
+        case "rentalCompleted":
+          navigate("/my-bookings", {
+            state: {
+              bookingId: notification.bookingId,
+            },
+          });
+          break;
 
-case "bookingCancelledByRenter":
-  navigate("/booking-requests", {
-    state: {
-      bookingId: notification.bookingId,
-    },
-  });
-  break;
+        case "bookingCancelledByRenter":
+          navigate("/booking-requests", {
+            state: {
+              bookingId: notification.bookingId,
+            },
+          });
+          break;
 
         // =========================
         // Owner Notifications
@@ -143,13 +143,38 @@ case "bookingCancelledByRenter":
   });
 
   return (
-    <div className="absolute right-0 top-12 w-96 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden z-50">
+    <div
+      className="
+        fixed
+        top-[70px]
+        left-2
+        right-2
+        w-auto
+        max-w-none
+        max-h-[70vh]
+        overflow-y-auto
+        bg-white
+        rounded-2xl
+        shadow-2xl
+        border
+        border-gray-200
+        z-[100]
+
+        lg:absolute
+        lg:top-12
+        lg:right-0
+        lg:left-auto
+        lg:w-96
+        lg:max-w-96
+        lg:max-h-[75vh]
+      "
+    >
 
       {/* =========================
           Header
       ========================= */}
 
-      <div className="px-5 py-4 border-b bg-white">
+      <div className="sticky top-0 z-10 px-5 py-4 border-b bg-white">
         <h2 className="text-lg font-bold text-gray-900">
           Notifications
         </h2>
@@ -225,7 +250,7 @@ case "bookingCancelledByRenter":
                           Notification Content
                       ========================= */}
 
-                      <div className="flex-1 text-left">
+                      <div className="flex-1 text-left min-w-0">
 
                         {/* Title */}
 
