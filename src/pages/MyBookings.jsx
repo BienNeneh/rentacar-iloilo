@@ -210,9 +210,6 @@ function MyBookings() {
     }
   }
 
-  // =========================
-  // Determine Booking Category
-  // =========================
 
   // =========================
   // Group Bookings

@@ -1,70 +1,141 @@
+import {
+  FaUser,
+  FaEnvelope,
+  FaCalendarAlt,
+  FaClock,
+  FaCalendarCheck,
+  FaMoneyBillWave,
+} from "react-icons/fa";
+
 function BookingDetails({ booking }) {
   return (
-    <>
-      {/* Requested By */}
+    <div className="space-y-6">
 
+      {/* =====================================================
+          RENTER
+      ===================================================== */}
       <div>
+        <div className="flex items-center gap-2 text-sm font-semibold text-gray-500">
+          <FaUser className="text-purple-500" />
+          <span>Requested By</span>
+        </div>
 
-        <p className="text-gray-500 font-semibold">
-          👤 Requested By
-        </p>
+        <div className="mt-3">
+          <h3 className="text-lg font-bold text-gray-900">
+            {booking.renterName || booking.renterEmail}
+          </h3>
 
-        <h3 className="text-xl font-semibold mt-2">
-          {booking.renterName || booking.renterEmail}
-        </h3>
+          <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
+            <FaEnvelope className="text-gray-400" />
 
-        <p className="text-gray-500 mt-1">
-          {booking.renterEmail}
-        </p>
-
+            <span className="break-all">
+              {booking.renterEmail}
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Booking Details */}
+      {/* =====================================================
+          DIVIDER
+      ===================================================== */}
+      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
-      <div className="grid md:grid-cols-4 gap-6 mt-8">
+      {/* =====================================================
+          BOOKING INFORMATION
+      ===================================================== */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
 
-        <div>
-          <p className="text-gray-500">
-            Pickup
-          </p>
+        {/* Pickup */}
+        <div
+          className="
+            rounded-2xl
+            border
+            border-orange-100
+            bg-gradient-to-br
+            from-orange-50
+            to-white
+            p-4
+          "
+        >
+          <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+            <FaCalendarAlt className="text-orange-500" />
+            <span>Pickup</span>
+          </div>
 
-          <h3 className="font-bold mt-1">
+          <p className="mt-2 text-sm font-bold text-gray-900">
             {booking.pickupDate}
-          </h3>
+          </p>
         </div>
 
-        <div>
-          <p className="text-gray-500">
-            Return
-          </p>
+        {/* Return */}
+        <div
+          className="
+            rounded-2xl
+            border
+            border-purple-100
+            bg-gradient-to-br
+            from-purple-50
+            to-white
+            p-4
+          "
+        >
+          <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+            <FaCalendarCheck className="text-purple-500" />
+            <span>Return</span>
+          </div>
 
-          <h3 className="font-bold mt-1">
+          <p className="mt-2 text-sm font-bold text-gray-900">
             {booking.returnDate}
-          </h3>
+          </p>
         </div>
 
-        <div>
-          <p className="text-gray-500">
-            Rental Days
-          </p>
+        {/* Rental Days */}
+        <div
+          className="
+            rounded-2xl
+            border
+            border-blue-100
+            bg-gradient-to-br
+            from-blue-50
+            to-white
+            p-4
+          "
+        >
+          <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+            <FaClock className="text-blue-500" />
+            <span>Rental Days</span>
+          </div>
 
-          <h3 className="font-bold mt-1">
-            {booking.rentalDays}
-          </h3>
+          <p className="mt-2 text-sm font-bold text-gray-900">
+            {booking.rentalDays}{" "}
+            {Number(booking.rentalDays) === 1 ? "day" : "days"}
+          </p>
         </div>
 
-        <div>
-          <p className="text-gray-500">
-            Total
-          </p>
+        {/* Total */}
+        <div
+          className="
+            rounded-2xl
+            border
+            border-emerald-100
+            bg-gradient-to-br
+            from-emerald-50
+            to-white
+            p-4
+          "
+        >
+          <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+            <FaMoneyBillWave className="text-emerald-500" />
+            <span>Total</span>
+          </div>
 
-          <h3 className="font-bold text-blue-600 mt-1">
+          <p className="mt-2 text-lg font-extrabold text-emerald-600">
             ₱{Number(booking.totalPrice).toLocaleString()}
-          </h3>
+          </p>
         </div>
 
       </div>
-    </>
+    </div>
   );
 }
 

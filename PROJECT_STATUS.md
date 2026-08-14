@@ -146,6 +146,8 @@ Notification Types:
 - bookingApproved
 - bookingRejected
 - bookingCancelled
+- bookingCancelledByRenter
+- rentalCompleted
 
 ---
 
@@ -183,6 +185,8 @@ Notification Types:
 - [x] Completion Confirmation
 - [x] Completed Rental History
 - [x] Completed Bookings Permanently Stored
+- [x] Deleted-car Booking History Handling
+- [x] Real-time My Bookings Updates
 
 ---
 
@@ -215,31 +219,52 @@ Notification Types:
 - [x] Notification Navigation
 - [x] Exact Booking Highlighting
 - [x] Owner New Booking Request Notifications
+- [x] Renter Cancellation Notifications
+- [x] Rental Completion Notifications
+- [x] Mobile Notification Bell
+- [x] Responsive Mobile Notification Dropdown
+
+---
+
+# Mobile UX
+
+- [x] Responsive My Cars layout
+- [x] Mobile Dashboard Navbar
+- [x] Mobile Add Car Navbar
+- [x] Mobile Notification Bell
+- [x] Mobile Notification Badge
+- [x] Mobile Notification Dropdown
+- [x] Responsive Notification Panel
+- [x] Notification Panel Scrolling
+- [x] Mobile Navigation Drawer
 
 ---
 
 # Architecture Improvements
 
-- [x] Navbar component refactor
+## Navbar Component Refactor
 
-Components:
+- [x] NavbarLogo
+- [x] DesktopNavigation
+- [x] MobileDrawer
+- [x] NotificationBell
+- [x] NotificationDropdown
+- [x] UserMenu
 
-- NavbarLogo
-- DesktopNavigation
-- MobileDrawer
-- NotificationBell
-- NotificationDropdown
-- UserMenu
+## Notification Architecture
 
 - [x] Notification system extracted into Notification Service
-
-- [x] Reusable utility functions
+- [x] Reusable notification utilities
+- [x] Notification icons extracted
+- [x] Relative timestamp utility
+- [x] Booking navigation through notification state
 
 Utilities:
 
 - formatTimeAgo.js
 - notificationIcon.jsx
 - dateUtils.js
+- bookingUtils.js
 
 ---
 
@@ -272,9 +297,14 @@ Utilities:
 - [x] Notification dropdown navigation
 - [x] Booking Requests refresh when navigating with booking ID
 - [x] `bookingCancelledByRenter` notification type
+- [x] Mobile notification bell
+- [x] Responsive mobile notification dropdown
+- [x] Mobile Add Car navbar
+- [x] Mobile My Cars improvements
 
 ### Remaining
 
+- [ ] Verify cancelled booking notification → exact Booking Request navigation
 - [ ] Booking Rejected → Renter notification/navigation
 - [ ] Owner cancellation → Renter notification/navigation
 - [ ] Final regression testing
@@ -285,13 +315,10 @@ Utilities:
 ## Version 0.8.4 Status
 
 🟡 Testing / Stabilization
+
+---
+
 # Future Roadmap
-
-## Version 0.8.4
-
-- Renter cancellation notifications
-- Rental completion notifications
-- Real-time Notifications
 
 ## Version 0.9
 
@@ -322,11 +349,11 @@ Utilities:
 
 # Latest Stable Version
 
-**Version 0.8.3 — "Booking History & Manual Completion"**
+**Version 0.8.4 — "Notification Completion"**
 
 Current Status:
 
-🟢 Stable Development Build
+🟡 Testing / Stabilization
 
 Latest Major Features:
 
@@ -342,10 +369,16 @@ Latest Major Features:
 - Exact Booking Highlighting
 - Owner New Booking Request Notifications
 - Booking Approval / Rejection / Cancellation Notifications
+- Rental Completion Notifications
+- Real-time Booking Synchronization
 - Availability Synchronization
 - Booking Management
 - Upcoming / Active / Completed Booking Organization
 - Manual Rental Completion
 - Completion Confirmation
 - Permanent Booking History
+- Deleted-car Booking Handling
+- Responsive Mobile Navbar
+- Responsive Mobile Notifications
+- Mobile Navigation Drawer
 - Vercel SPA Routing Fix

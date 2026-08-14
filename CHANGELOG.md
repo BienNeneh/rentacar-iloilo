@@ -2,7 +2,7 @@
 
 ## Version 0.8.4 — Notification Completion
 
-Release Date: August 11, 2026
+Release Date: August 13, 2026
 
 ---
 
@@ -67,7 +67,8 @@ Notifications include:
 - Booking request notifications navigate owners to `/booking-requests`.
 - Notification navigation carries the related `bookingId`.
 - Added exact booking identification during notification navigation.
-- Existing temporary booking highlighting is preserved.
+- Added temporary visual highlighting for the related booking.
+- Preserved notification-based booking highlighting across booking pages.
 
 ---
 
@@ -77,6 +78,52 @@ Notifications include:
 - Booking Requests now refreshes booking data when a notification supplies a booking ID.
 - Owners no longer need to manually refresh the page before opening a newly received booking request.
 - New booking requests can now be opened directly from notifications without a page refresh.
+
+---
+
+### 📱 Mobile UX Improvements
+
+#### Mobile Navbar
+
+- Added responsive mobile navbar behavior.
+- Added notification bell to the mobile navbar.
+- Added mobile unread notification badge.
+- Preserved the existing desktop notification experience.
+- Continued using the same centralized `NotificationBell` component across desktop and mobile.
+
+#### Mobile Notifications
+
+- Added responsive mobile notification dropdown.
+- Redesigned notification panel positioning for smaller screens.
+- Notification panel now remains within the mobile viewport.
+- Added responsive notification panel width.
+- Added mobile notification panel scrolling.
+- Added sticky notification header while scrolling.
+- Improved notification content handling on narrow screens.
+- Preserved existing notification grouping and navigation behavior.
+
+#### Mobile Pages
+
+- Added Dashboard Navbar to the Add Car page.
+- Improved My Cars responsive layout.
+- Improved mobile navigation consistency across dashboard pages.
+
+---
+
+### 🏗 Architecture Improvements
+
+#### Navbar Architecture
+
+Continued using the modular navbar structure:
+
+- `NavbarLogo`
+- `DesktopNavigation`
+- `MobileDrawer`
+- `NotificationBell`
+- `NotificationDropdown`
+- `UserMenu`
+
+The same notification system is now shared across desktop and mobile navigation.
 
 ---
 
@@ -97,9 +144,16 @@ Successfully tested:
 - Notification grouping.
 - Notification dropdown navigation.
 - New booking request navigation without manual page refresh.
+- Mobile notification bell visibility.
+- Mobile notification unread badge.
+- Mobile notification dropdown.
+- Mobile notification scrolling.
+- Mobile Add Car navbar.
+- Mobile My Cars layout.
 
 Remaining regression tests:
 
+- [ ] Verify renter cancellation notification → exact cancelled booking navigation on the owner side.
 - [ ] Booking Rejected → Renter notification/navigation.
 - [ ] Owner cancellation → Renter notification/navigation.
 - [ ] Final Vercel production regression testing.
