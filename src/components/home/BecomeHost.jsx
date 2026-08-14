@@ -1,47 +1,123 @@
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import hostBenefits from "../../data/hostBenefits";
 
 function BecomeHost() {
+  const navigate = useNavigate();
+
   return (
-    <section className="py-28">
+    <section className="bg-white py-24 sm:py-28">
 
-      <div className="max-w-7xl mx-auto px-8">
+      <div className="mx-auto max-w-7xl px-6">
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
 
-          {/* LEFT */}
+          {/* =========================
+              LEFT
+          ========================= */}
 
           <div>
 
-            <span className="text-blue-600 font-semibold uppercase tracking-widest">
-              Become a Host
-            </span>
+            {/* Label */}
 
-            <h2 className="text-5xl font-bold mt-4 leading-tight">
-              Earn Money From Your Car
+            <div
+              className="
+                inline-flex
+                items-center
+                gap-2
+                rounded-full
+                border
+                border-orange-200
+                bg-orange-50
+                px-4
+                py-2
+                text-sm
+                font-bold
+                uppercase
+                tracking-widest
+                text-orange-600
+              "
+            >
+              <span className="h-2 w-2 rounded-full bg-orange-500" />
+
+              Become a Host
+            </div>
+
+            {/* Heading */}
+
+            <h2
+              className="
+                mt-6
+                text-4xl
+                font-extrabold
+                leading-tight
+                tracking-tight
+                text-[#2F2F2F]
+                sm:text-5xl
+              "
+            >
+              Turn Your Car Into
+              <span className="block text-orange-500">
+                Extra Income.
+              </span>
             </h2>
 
-            <p className="text-gray-500 text-lg mt-6 leading-8">
+            {/* Description */}
 
+            <p
+              className="
+                mt-6
+                max-w-xl
+                text-lg
+                leading-8
+                text-gray-500
+              "
+            >
               Your vehicle spends most of its time parked.
-
-              Turn it into an income source by renting it safely
-              to verified drivers across Iloilo Province.
-
+              Put it to work by sharing it with trusted
+              renters across Iloilo Province.
             </p>
 
-            <div className="mt-10 space-y-5">
+            {/* =========================
+                Benefits
+            ========================= */}
+
+            <div className="mt-9 space-y-5">
 
               {hostBenefits.map((benefit, index) => (
 
                 <div
                   key={index}
-                  className="flex items-center gap-4"
+                  className="
+                    flex
+                    items-center
+                    gap-4
+                  "
                 >
 
-                  <FaCheckCircle className="text-blue-600 text-xl" />
+                  <div
+                    className="
+                      flex
+                      h-9
+                      w-9
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-orange-50
+                    "
+                  >
+                    <FaCheckCircle className="text-orange-500" />
+                  </div>
 
-                  <span className="text-lg">
+                  <span
+                    className="
+                      text-base
+                      font-medium
+                      text-gray-700
+                      sm:text-lg
+                    "
+                  >
                     {benefit}
                   </span>
 
@@ -51,39 +127,159 @@ function BecomeHost() {
 
             </div>
 
+            {/* =========================
+                CTA
+            ========================= */}
+
             <button
+              onClick={() => navigate("/add-car")}
               className="
-                mt-12
-                bg-blue-600
-                text-white
-                px-10
-                py-4
+                group
+                mt-10
+                inline-flex
+                items-center
+                gap-3
                 rounded-xl
-                font-semibold
-                hover:bg-blue-700
-                transition
+                bg-orange-500
+                px-7
+                py-4
+                font-bold
+                text-white
+                shadow-lg
+                shadow-orange-200
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:bg-orange-600
+                hover:shadow-xl
               "
             >
-              Start Hosting Today
+              <span>
+                Start Hosting Today
+              </span>
+
+              <FaArrowRight
+                className="
+                  transition-transform
+                  duration-300
+                  group-hover:translate-x-1
+                "
+              />
             </button>
+
+            <p className="mt-4 text-sm text-gray-400">
+              List your vehicle and start accepting rental requests.
+            </p>
 
           </div>
 
-          {/* RIGHT */}
+          {/* =========================
+              RIGHT — IMAGE
+          ========================= */}
 
-          <div>
+          <div className="relative">
 
-            <img
-              src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80"
-              alt="Host your car"
+            {/* Decorative background */}
+
+            <div
               className="
-                rounded-3xl
-                shadow-2xl
-                hover:scale-105
-                transition
-                duration-500
+                absolute
+                -right-4
+                -top-4
+                h-32
+                w-32
+                rounded-full
+                bg-orange-200/50
+                blur-3xl
               "
             />
+
+            <div
+              className="
+                absolute
+                -bottom-6
+                -left-6
+                h-32
+                w-32
+                rounded-full
+                bg-amber-100
+                blur-2xl
+              "
+            />
+
+            {/* Image */}
+
+            <div
+              className="
+                relative
+                overflow-hidden
+                rounded-3xl
+                border
+                border-orange-100
+                shadow-2xl
+              "
+            >
+
+              <img
+                src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80"
+                alt="Host your car"
+                className="
+                  h-[420px]
+                  w-full
+                  object-cover
+                  transition-transform
+                  duration-700
+                  hover:scale-105
+                  sm:h-[500px]
+                "
+              />
+
+              {/* Image gradient */}
+
+              <div
+                className="
+                  absolute
+                  inset-0
+                  bg-gradient-to-t
+                  from-black/40
+                  via-transparent
+                  to-transparent
+                "
+              />
+
+              {/* Floating message */}
+
+              <div
+                className="
+                  absolute
+                  bottom-6
+                  left-6
+                  right-6
+                  rounded-2xl
+                  border
+                  border-white/30
+                  bg-white/90
+                  p-4
+                  shadow-xl
+                  backdrop-blur
+                  sm:left-8
+                  sm:right-auto
+                  sm:max-w-xs
+                "
+              >
+
+                <p className="text-sm font-semibold text-orange-600">
+                  🚗 Your car could be earning
+                </p>
+
+                <p className="mt-1 text-sm text-gray-600">
+                  Share your vehicle with renters
+                  in your community.
+                </p>
+
+              </div>
+
+            </div>
 
           </div>
 

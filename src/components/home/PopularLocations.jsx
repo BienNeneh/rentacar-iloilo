@@ -19,7 +19,8 @@ function PopularLocations() {
           const car = doc.data();
 
           if (car.location) {
-            counts[car.location] = (counts[car.location] || 0) + 1;
+            counts[car.location] =
+              (counts[car.location] || 0) + 1;
           }
         });
 
@@ -33,18 +34,37 @@ function PopularLocations() {
   }, []);
 
   return (
-    <section className="py-28">
-      <div className="max-w-7xl mx-auto px-8">
+    <section className="relative overflow-hidden bg-gradient-to-b from-orange-50 via-white to-orange-50 py-20 sm:py-24 lg:py-28">
 
-        <h2 className="text-5xl font-bold text-center">
-          Explore Iloilo Province
-        </h2>
+      {/* Decorative sunset glow */}
+      <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-orange-200/40 blur-3xl" />
 
-        <p className="text-center text-gray-500 mt-5 text-xl">
-          Browse available vehicles from trusted owners across Iloilo's municipalities.
-        </p>
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
+        {/* Section Header */}
+        <div className="mx-auto max-w-3xl text-center">
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/80 px-4 py-2 text-sm font-semibold text-orange-600 shadow-sm backdrop-blur">
+            <span>📍</span>
+            Explore Iloilo
+          </div>
+
+          <h2 className="mt-5 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+            Discover Your Next
+            <span className="block text-orange-500">
+              Ride Across Iloilo
+            </span>
+          </h2>
+
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-gray-600 sm:text-lg">
+            Browse vehicles from trusted local owners across
+            Iloilo's cities and municipalities.
+          </p>
+
+        </div>
+
+        {/* Location Cards */}
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4 lg:gap-7">
 
           {locations.map((location) => (
             <LocationCard
@@ -55,6 +75,16 @@ function PopularLocations() {
           ))}
 
         </div>
+
+        {/* Bottom message */}
+        <div className="mt-12 text-center">
+
+          <p className="text-sm text-gray-500">
+            More destinations across Iloilo coming soon.
+          </p>
+
+        </div>
+
       </div>
     </section>
   );

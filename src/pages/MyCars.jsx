@@ -3,6 +3,7 @@ import { db, auth } from "../firebase/firebase";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+
 import {
   collection,
   getDocs,
@@ -11,38 +12,58 @@ import {
   query,
   where,
 } from "firebase/firestore";
+
 import {
   FaMapMarkerAlt,
   FaCarSide,
   FaCog,
   FaUsers,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaArrowRight,
+  FaCheckCircle,
+  FaExclamationCircle,
 } from "react-icons/fa";
 
 function MyCars() {
   const [cars, setCars] = useState([]);
   const navigate = useNavigate();
 
+  // =========================================================
+  // Fetch Owner's Cars
+  // =========================================================
+
   useEffect(() => {
     async function fetchCars() {
       if (!auth.currentUser) return;
 
-      const q = query(
-        collection(db, "cars"),
-        where("ownerId", "==", auth.currentUser.uid)
-      );
+      try {
+        const q = query(
+          collection(db, "cars"),
+          where("ownerId", "==", auth.currentUser.uid)
+        );
 
-      const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(q);
 
-      const carList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+        const carList = querySnapshot.docs.map((carDoc) => ({
+          id: carDoc.id,
+          ...carDoc.data(),
+        }));
 
-      setCars(carList);
+        setCars(carList);
+      } catch (error) {
+        console.error(error);
+        toast.error("Unable to load your vehicles.");
+      }
     }
 
     fetchCars();
   }, []);
+
+  // =========================================================
+  // Delete Car
+  // =========================================================
 
   async function deleteCar(id) {
     const confirmDelete = window.confirm(
@@ -65,222 +86,1049 @@ function MyCars() {
     }
   }
 
+  // =========================================================
+  // Statistics
+  // =========================================================
+
+  const availableCars = cars.filter(
+    (car) => (car.status || "available") === "available"
+  ).length;
+
+  const unavailableCars = cars.filter(
+    (car) => (car.status || "available") !== "available"
+  ).length;
+
   return (
     <>
       <DashboardNavbar />
 
-      <div className="min-h-screen bg-gray-100 py-6 sm:py-8 lg:py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+      <main
+        className="
+          min-h-screen
+          bg-gradient-to-b
+          from-orange-50
+          via-amber-50/30
+          to-gray-50
+          py-6
+          sm:py-8
+          lg:py-10
+        "
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-          {/* =========================
-              Page Header
-          ========================= */}
+          {/* =================================================
+              HERO
+          ================================================= */}
 
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between mb-8 sm:mb-10">
+          <section
+            className="
+              relative
+              overflow-hidden
+              rounded-3xl
+              bg-gradient-to-r
+              from-orange-300
+              via-orange-200
+              to-amber-200
+              px-6
+              py-7
+              shadow-sm
+              sm:px-8
+              sm:py-8
+            "
+          >
+            {/* Sunset Glow */}
 
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
-                My Cars
-              </h1>
+            <div
+              className="
+                absolute
+                -right-12
+                -top-16
+                h-56
+                w-56
+                rounded-full
+                bg-yellow-100/70
+                blur-3xl
+              "
+            />
 
-              <p className="text-gray-500 mt-2 text-sm sm:text-base">
-                Manage all your listed vehicles.
-              </p>
-            </div>
+            <div
+              className="
+                absolute
+                -bottom-20
+                left-1/3
+                h-48
+                w-48
+                rounded-full
+                bg-orange-400/20
+                blur-3xl
+              "
+            />
 
-            <button
-              onClick={() => navigate("/add-car")}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition"
+            <div
+              className="
+                relative
+                flex
+                flex-col
+                gap-6
+                lg:flex-row
+                lg:items-center
+                lg:justify-between
+              "
             >
-              + Add New Car
-            </button>
 
-          </div>
+              {/* Hero Text */}
 
-          {/* =========================
-              No Cars
-          ========================= */}
+              <div className="max-w-2xl">
 
-          {cars.length === 0 ? (
+                <span
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    bg-white/75
+                    px-3
+                    py-1.5
+                    text-xs
+                    font-bold
+                    text-orange-700
+                    backdrop-blur
+                  "
+                >
+                  <FaCarSide />
 
-            <div className="bg-white rounded-3xl shadow-lg px-6 py-10 sm:px-10 sm:py-14 lg:p-16 text-center">
+                  Owner Dashboard
+                </span>
 
-              <div className="text-6xl sm:text-7xl mb-5 sm:mb-6">
-                🚗
+                <h1
+                  className="
+                    mt-3
+                    text-3xl
+                    font-extrabold
+                    tracking-tight
+                    text-gray-900
+                    sm:text-4xl
+                  "
+                >
+                  My Vehicles
+                </h1>
+
+                <p
+                  className="
+                    mt-2
+                    max-w-xl
+                    text-sm
+                    leading-relaxed
+                    text-gray-700
+                    sm:text-base
+                  "
+                >
+                  Manage your vehicles, listings,
+                  and availability from one place.
+                </p>
+
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                No Cars Listed Yet
-              </h2>
-
-              <p className="text-gray-500 mt-4 max-w-md mx-auto text-sm sm:text-base leading-relaxed">
-                Start earning by listing your first vehicle.
-                It only takes a minute to get started.
-              </p>
+              {/* Add Vehicle */}
 
               <button
                 onClick={() => navigate("/add-car")}
-                className="w-full sm:w-auto mt-7 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition shadow-lg"
+                className="
+                  inline-flex
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-2xl
+                  bg-gray-900
+                  px-6
+                  py-3.5
+                  font-bold
+                  text-white
+                  shadow-lg
+                  transition-all
+                  duration-200
+                  hover:-translate-y-0.5
+                  hover:bg-gray-800
+                  hover:shadow-xl
+                  sm:w-auto
+                "
               >
-                + Add Your First Car
+                <FaPlus />
+
+                Add Vehicle
               </button>
 
             </div>
+          </section>
+
+          {/* =================================================
+              STATS
+          ================================================= */}
+
+          {cars.length > 0 && (
+            <section
+              className="
+                mt-6
+                grid
+                grid-cols-3
+                gap-3
+                sm:gap-4
+              "
+            >
+
+              {/* Total */}
+
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-orange-100
+                  bg-white
+                  p-4
+                  shadow-sm
+                  sm:p-5
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      h-9
+                      w-9
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-orange-100
+                      text-orange-600
+                    "
+                  >
+                    <FaCarSide />
+                  </div>
+
+                  <span
+                    className="
+                      text-xs
+                      font-semibold
+                      text-gray-500
+                      sm:text-sm
+                    "
+                  >
+                    Total
+                  </span>
+                </div>
+
+                <p
+                  className="
+                    mt-3
+                    text-2xl
+                    font-extrabold
+                    text-gray-900
+                    sm:text-3xl
+                  "
+                >
+                  {cars.length}
+                </p>
+
+                <p className="mt-1 text-xs text-gray-500">
+                  Vehicles
+                </p>
+              </div>
+
+              {/* Available */}
+
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-emerald-100
+                  bg-white
+                  p-4
+                  shadow-sm
+                  sm:p-5
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      h-9
+                      w-9
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-emerald-100
+                      text-emerald-600
+                    "
+                  >
+                    <FaCheckCircle />
+                  </div>
+
+                  <span
+                    className="
+                      text-xs
+                      font-semibold
+                      text-gray-500
+                      sm:text-sm
+                    "
+                  >
+                    Available
+                  </span>
+                </div>
+
+                <p
+                  className="
+                    mt-3
+                    text-2xl
+                    font-extrabold
+                    text-emerald-600
+                    sm:text-3xl
+                  "
+                >
+                  {availableCars}
+                </p>
+
+                <p className="mt-1 text-xs text-gray-500">
+                  Ready to rent
+                </p>
+              </div>
+
+              {/* Unavailable */}
+
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  bg-white
+                  p-4
+                  shadow-sm
+                  sm:p-5
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      h-9
+                      w-9
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-gray-100
+                      text-gray-500
+                    "
+                  >
+                    <FaExclamationCircle />
+                  </div>
+
+                  <span
+                    className="
+                      text-xs
+                      font-semibold
+                      text-gray-500
+                      sm:text-sm
+                    "
+                  >
+                    Unavailable
+                  </span>
+                </div>
+
+                <p
+                  className="
+                    mt-3
+                    text-2xl
+                    font-extrabold
+                    text-gray-700
+                    sm:text-3xl
+                  "
+                >
+                  {unavailableCars}
+                </p>
+
+                <p className="mt-1 text-xs text-gray-500">
+                  Not available
+                </p>
+              </div>
+
+            </section>
+          )}
+
+          {/* =================================================
+              SECTION HEADER
+          ================================================= */}
+
+          {cars.length > 0 && (
+            <div
+              className="
+                mt-8
+                flex
+                items-end
+                justify-between
+                gap-4
+                sm:mt-10
+              "
+            >
+
+              <div>
+
+                <h2
+                  className="
+                    text-2xl
+                    font-extrabold
+                    tracking-tight
+                    text-gray-900
+                    sm:text-3xl
+                  "
+                >
+                  Your Vehicles
+                </h2>
+
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                    text-gray-500
+                  "
+                >
+                  {cars.length}{" "}
+                  {cars.length === 1
+                    ? "vehicle"
+                    : "vehicles"}{" "}
+                  in your listings.
+                </p>
+
+              </div>
+
+              <button
+                onClick={() =>
+                  navigate("/add-car")
+                }
+                className="
+                  hidden
+                  items-center
+                  gap-2
+                  rounded-xl
+                  px-3
+                  py-2
+                  text-sm
+                  font-bold
+                  text-orange-600
+                  transition
+                  hover:bg-orange-50
+                  sm:flex
+                "
+              >
+                <FaPlus />
+
+                Add another
+              </button>
+
+            </div>
+          )}
+
+          {/* =================================================
+              EMPTY STATE
+          ================================================= */}
+
+          {cars.length === 0 ? (
+
+            <section
+              className="
+                mt-8
+                overflow-hidden
+                rounded-3xl
+                border
+                border-gray-100
+                bg-white
+                shadow-sm
+              "
+            >
+              <div
+                className="
+                  relative
+                  px-6
+                  py-12
+                  text-center
+                  sm:px-10
+                  sm:py-16
+                "
+              >
+
+                {/* Decorative Glow */}
+
+                <div
+                  className="
+                    absolute
+                    left-1/2
+                    top-0
+                    h-40
+                    w-40
+                    -translate-x-1/2
+                    -translate-y-1/2
+                    rounded-full
+                    bg-orange-100
+                    blur-3xl
+                  "
+                />
+
+                {/* Icon */}
+
+                <div
+                  className="
+                    relative
+                    mx-auto
+                    flex
+                    h-20
+                    w-20
+                    items-center
+                    justify-center
+                    rounded-3xl
+                    bg-orange-100
+                    text-orange-600
+                    shadow-sm
+                  "
+                >
+                  <FaCarSide className="text-3xl" />
+                </div>
+
+                <h2
+                  className="
+                    mt-6
+                    text-2xl
+                    font-extrabold
+                    text-gray-900
+                    sm:text-3xl
+                  "
+                >
+                  No Vehicles Listed Yet
+                </h2>
+
+                <p
+                  className="
+                    mx-auto
+                    mt-3
+                    max-w-md
+                    text-sm
+                    leading-relaxed
+                    text-gray-500
+                    sm:text-base
+                  "
+                >
+                  Start earning by listing your
+                  first vehicle. It only takes a few
+                  minutes to get started.
+                </p>
+
+                <button
+                  onClick={() =>
+                    navigate("/add-car")
+                  }
+                  className="
+                    relative
+                    mt-7
+                    inline-flex
+                    w-full
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-2xl
+                    bg-gradient-to-r
+                    from-orange-500
+                    to-orange-600
+                    px-7
+                    py-3.5
+                    font-bold
+                    text-white
+                    shadow-lg
+                    transition-all
+                    duration-200
+                    hover:-translate-y-0.5
+                    hover:from-orange-600
+                    hover:to-orange-700
+                    hover:shadow-xl
+                    sm:w-auto
+                  "
+                >
+                  <FaPlus />
+
+                  Add Your First Vehicle
+
+                  <FaArrowRight
+                    className="text-sm"
+                  />
+                </button>
+
+              </div>
+            </section>
 
           ) : (
 
-            /* =========================
-                Car Grid
-            ========================= */
+            /* =================================================
+               VEHICLE GRID
+            ================================================= */
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            <section
+              className="
+                mt-5
+                grid
+                grid-cols-1
+                gap-5
+                sm:grid-cols-2
+                sm:gap-6
+                xl:grid-cols-3
+              "
+            >
 
-              {cars.map((car) => (
+              {cars.map((car) => {
 
-                <div
-                  key={car.id}
-                  className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300"
-                >
+                const isAvailable =
+                  (car.status || "available") ===
+                  "available";
 
-                  {/* Car Image */}
+                return (
+                  <article
+                    key={car.id}
+                    className="
+                      group
+                      relative
+                      overflow-hidden
+                      rounded-3xl
+                      border
+                      border-gray-100
+                      bg-white
+                      shadow-sm
+                      transition-all
+                      duration-300
+                      hover:-translate-y-1
+                      hover:shadow-xl
+                    "
+                  >
 
-                  <img
-                    src={car.image}
-                    alt={`${car.brand} ${car.model}`}
-                    className="w-full h-52 sm:h-48 lg:h-52 object-cover"
-                  />
-
-                  <div className="p-5 sm:p-6">
-
-                    {/* Status */}
+                    {/* Sunset Accent */}
 
                     <div
-                      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold ${
-                        (car.status || "available") === "available"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                      className="
+                        absolute
+                        inset-x-0
+                        top-0
+                        z-10
+                        h-1
+                        bg-gradient-to-r
+                        from-orange-300
+                        via-orange-400
+                        to-amber-400
+                      "
+                    />
+
+                    {/* =================================================
+                        IMAGE
+                    ================================================= */}
+
+                    <div
+                      className="
+                        relative
+                        h-56
+                        overflow-hidden
+                        sm:h-52
+                      "
                     >
 
-                      <div
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          (car.status || "available") === "available"
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                        }`}
+                      <img
+                        src={car.image}
+                        alt={`${car.brand} ${car.model}`}
+                        className="
+                          h-full
+                          w-full
+                          object-cover
+                          transition-transform
+                          duration-500
+                          group-hover:scale-105
+                        "
                       />
 
-                      {(car.status || "available") === "available"
-                        ? "Available"
-                        : "Unavailable"}
+                      {/* Image Overlay */}
+
+                      <div
+                        className="
+                          absolute
+                          inset-0
+                          bg-gradient-to-t
+                          from-black/55
+                          via-transparent
+                          to-black/5
+                        "
+                      />
+
+                      {/* Availability */}
+
+                      <div
+                        className="
+                          absolute
+                          left-4
+                          top-4
+                        "
+                      >
+                        <div
+                          className={`
+                            inline-flex
+                            items-center
+                            gap-2
+                            rounded-full
+                            px-3
+                            py-1.5
+                            text-xs
+                            font-bold
+                            shadow-sm
+                            backdrop-blur
+                            ${
+                              isAvailable
+                                ? "bg-emerald-50/95 text-emerald-700"
+                                : "bg-gray-100/95 text-gray-700"
+                            }
+                          `}
+                        >
+                          <span
+                            className={`
+                              h-2
+                              w-2
+                              rounded-full
+                              ${
+                                isAvailable
+                                  ? "bg-emerald-500"
+                                  : "bg-gray-500"
+                              }
+                            `}
+                          />
+
+                          {isAvailable
+                            ? "Available"
+                            : "Unavailable"}
+                        </div>
+                      </div>
+
+                      {/* Price */}
+
+                      <div
+                        className="
+                          absolute
+                          bottom-4
+                          left-4
+                        "
+                      >
+                        <p
+                          className="
+                            text-xs
+                            font-medium
+                            text-white/80
+                          "
+                        >
+                          Daily rate
+                        </p>
+
+                        <p
+                          className="
+                            mt-0.5
+                            text-2xl
+                            font-extrabold
+                            text-white
+                          "
+                        >
+                          ₱
+                          {Number(
+                            car.price
+                          ).toLocaleString()}
+
+                          <span
+                            className="
+                              text-sm
+                              font-semibold
+                              text-white/80
+                            "
+                          >
+                            /day
+                          </span>
+                        </p>
+                      </div>
 
                     </div>
 
-                    {/* Car Name */}
+                    {/* =================================================
+                        CONTENT
+                    ================================================= */}
 
-                    <h2 className="text-2xl sm:text-3xl font-bold mt-3 text-gray-900 break-words">
-                      {car.brand} {car.model}
-                    </h2>
+                    <div className="p-5 sm:p-6">
 
-                    {/* Car Information */}
+                      {/* Name */}
 
-                    <div className="mt-4 space-y-3">
+                      <h3
+                        className="
+                          truncate
+                          text-2xl
+                          font-extrabold
+                          tracking-tight
+                          text-gray-900
+                        "
+                      >
+                        {car.brand} {car.model}
+                      </h3>
 
-                      <div className="flex items-start gap-2 text-gray-500">
-                        <FaCarSide className="text-blue-500 mt-1 shrink-0" />
+                      <p
+                        className="
+                          mt-1
+                          text-sm
+                          font-medium
+                          text-gray-500
+                        "
+                      >
+                        {car.vehicleType}
 
-                        <span className="break-words">
-                          {car.vehicleType} • {car.year}
+                        <span
+                          className="
+                            mx-1
+                            text-gray-300
+                          "
+                        >
+                          •
                         </span>
-                      </div>
 
-                      <div className="flex items-start gap-2 text-gray-600">
-                        <FaMapMarkerAlt className="text-red-500 mt-1 shrink-0" />
+                        {car.year}
+                      </p>
 
-                        <span className="break-words">
-                          {car.location}
-                        </span>
-                      </div>
+                      {/* Details */}
 
-                      <div className="flex items-center justify-between gap-4 text-gray-600">
+                      <div className="mt-5 space-y-3">
 
-                        <div className="flex items-center gap-2 min-w-0">
-                          <FaCog className="text-gray-500 shrink-0" />
+                        {/* Location */}
+
+                        <div
+                          className="
+                            flex
+                            items-center
+                            gap-2.5
+                            text-sm
+                            text-gray-500
+                          "
+                        >
+                          <FaMapMarkerAlt
+                            className="
+                              shrink-0
+                              text-orange-500
+                            "
+                          />
 
                           <span className="truncate">
-                            {car.transmission}
+                            {car.location}
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-2 shrink-0">
-                          <FaUsers className="text-gray-500" />
+                        {/* Transmission / Seats */}
 
-                          <span>
+                        <div
+                          className="
+                            flex
+                            items-center
+                            justify-between
+                            gap-3
+                            text-sm
+                            text-gray-500
+                          "
+                        >
+
+                          <span
+                            className="
+                              flex
+                              min-w-0
+                              items-center
+                              gap-2.5
+                            "
+                          >
+                            <FaCog
+                              className="
+                                shrink-0
+                                text-orange-500
+                              "
+                            />
+
+                            <span className="truncate">
+                              {car.transmission}
+                            </span>
+                          </span>
+
+                          <span
+                            className="
+                              flex
+                              shrink-0
+                              items-center
+                              gap-2
+                            "
+                          >
+                            <FaUsers
+                              className="
+                                text-orange-500
+                              "
+                            />
+
                             {car.seats} Seats
                           </span>
+
                         </div>
 
                       </div>
 
-                    </div>
+                      {/* Divider */}
 
-                    {/* Price */}
+                      <div
+                        className="
+                          my-5
+                          h-px
+                          bg-gray-100
+                        "
+                      />
 
-                    <p className="mt-6">
-
-                      <span className="text-2xl sm:text-3xl font-bold text-blue-600">
-                        ₱{Number(car.price).toLocaleString()}
-                      </span>
-
-                      <span className="text-gray-500 font-medium">
-                        /day
-                      </span>
-
-                    </p>
-
-                    {/* Actions */}
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 mt-6">
+                      {/* =================================================
+                          PRIMARY ACTION
+                      ================================================= */}
 
                       <button
                         onClick={() =>
-                          navigate(`/manage-car/${car.id}`)
+                          navigate(
+                            `/manage-car/${car.id}`
+                          )
                         }
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition"
+                        className="
+                          flex
+                          w-full
+                          items-center
+                          justify-center
+                          gap-2
+                          rounded-xl
+                          bg-gray-900
+                          px-4
+                          py-3
+                          font-bold
+                          text-white
+                          shadow-sm
+                          transition-all
+                          duration-200
+                          hover:-translate-y-0.5
+                          hover:bg-gray-800
+                          hover:shadow-md
+                        "
                       >
-                        ⚙ Manage
+                        <FaCog />
+
+                        Manage Vehicle
+
+                        <FaArrowRight
+                          className="
+                            ml-auto
+                            text-xs
+                          "
+                        />
                       </button>
 
-                      <button
-                        onClick={() =>
-                          navigate(`/edit-car/${car.id}`)
-                        }
-                        className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
-                      >
-                        ✏ Edit
-                      </button>
+                      {/* =================================================
+                          SECONDARY ACTIONS
+                      ================================================= */}
 
-                      <button
-                        onClick={() => deleteCar(car.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold transition"
+                      <div
+                        className="
+                          mt-2.5
+                          grid
+                          grid-cols-2
+                          gap-2.5
+                        "
                       >
-                        🗑 Delete
-                      </button>
+
+                        <button
+                          onClick={() =>
+                            navigate(
+                              `/edit-car/${car.id}`
+                            )
+                          }
+                          className="
+                            inline-flex
+                            items-center
+                            justify-center
+                            gap-2
+                            rounded-xl
+                            border
+                            border-orange-100
+                            bg-orange-50
+                            px-3
+                            py-3
+                            text-sm
+                            font-bold
+                            text-orange-600
+                            transition
+                            hover:border-orange-200
+                            hover:bg-orange-100
+                          "
+                        >
+                          <FaEdit />
+
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            deleteCar(car.id)
+                          }
+                          className="
+                            inline-flex
+                            items-center
+                            justify-center
+                            gap-2
+                            rounded-xl
+                            border
+                            border-red-100
+                            bg-red-50
+                            px-3
+                            py-3
+                            text-sm
+                            font-bold
+                            text-red-600
+                            transition
+                            hover:border-red-200
+                            hover:bg-red-100
+                          "
+                        >
+                          <FaTrash />
+
+                          Delete
+                        </button>
+
+                      </div>
 
                     </div>
+                  </article>
+                );
+              })}
 
-                  </div>
-
-                </div>
-
-              ))}
-
-            </div>
-
+            </section>
           )}
 
         </div>
-      </div>
+      </main>
     </>
   );
 }

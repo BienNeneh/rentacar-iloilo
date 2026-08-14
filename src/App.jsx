@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+
 import BookingLifecycle from "./components/system/BookingLifecycle";
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Signup from "./pages/Signup";
-import { Toaster } from "react-hot-toast";
-import Dashboard from "./pages/Dashboard";
+import VerifyEmail from "./pages/VerifyEmail";
 
+import Dashboard from "./pages/Dashboard";
 import AddCar from "./pages/AddCar";
 import MyCars from "./pages/MyCars";
 import EditCar from "./pages/EditCar";
@@ -25,26 +28,64 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
-    
     <BrowserRouter>
+
+      {/* =========================
+          SYSTEM
+      ========================= */}
+
       <BookingLifecycle />
-     <Toaster
+
+      <Toaster
         position="top-right"
         reverseOrder={false}
       />
+
       <Routes>
 
-        {/* Public Routes */}
+        {/* =========================
+            PUBLIC ROUTES
+        ========================= */}
 
-        <Route path="/" element={<Home />} />
-        <Route path="/list-car" element={<ListCar />} />
-        <Route path="/car/:id" element={<CarDetails />} />
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/signup" element={<Register />} />
+        <Route
+          path="/list-car"
+          element={<ListCar />}
+        />
 
-        {/* Protected Routes */}
+        <Route
+          path="/car/:id"
+          element={<CarDetails />}
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route
+          path="/signup"
+          element={<Signup />}
+        />
+
+        <Route
+          path="/verify-email"
+          element={<VerifyEmail />}
+        />
+
+
+        {/* =========================
+            PROTECTED ROUTES
+        ========================= */}
 
         <Route
           path="/dashboard"
@@ -54,7 +95,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
 
         <Route
           path="/my-cars"
@@ -119,11 +159,18 @@ function App() {
           }
         />
 
-        {/* 404 */}
 
-        <Route path="*" element={<NotFound />} />
+        {/* =========================
+            404
+        ========================= */}
+
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
 
       </Routes>
+
     </BrowserRouter>
   );
 }

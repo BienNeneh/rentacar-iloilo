@@ -1,112 +1,356 @@
 import { useState } from "react";
+import {
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+
 import { auth } from "../firebase/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import { FaArrowLeft } from "react-icons/fa";
-function Login() {
 
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-  async function handleLogin(e) {
+  const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
+  async function handleLogin(e) {
     e.preventDefault();
 
+    if (loading) return;
+
+    setLoading(true);
+
     try {
+      // ==========================================
+      // SIGN IN
+      // ==========================================
 
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential =
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
 
-      navigate("/list-car");
+      const user = userCredential.user;
+
+      // ==========================================
+      // EMAIL VERIFICATION CHECK
+      // ==========================================
+
+      if (!user.emailVerified) {
+        /*
+         * IMPORTANT:
+         *
+         * DO NOT sign the user out here.
+         *
+         * VerifyEmail.jsx needs the Firebase session
+         * so it can reload the user and check whether
+         * the email has been verified.
+         */
+
+        navigate("/verify-email", {
+          replace: true,
+          state: {
+            email: user.email,
+          },
+        });
+
+        return;
+      }
+
+      // ==========================================
+      // VERIFIED USER
+      // ==========================================
+
+      toast.success("Welcome back!");
+
+      navigate("/list-car", {
+        replace: true,
+      });
 
     } catch (error) {
+      console.error("Login Error:", error);
 
-      alert(error.message);
+      // ==========================================
+      // FIREBASE LOGIN ERRORS
+      // ==========================================
 
+      if (
+        error.code === "auth/invalid-credential"
+      ) {
+        toast.error(
+          "Incorrect email or password."
+        );
+
+      } else if (
+        error.code === "auth/user-not-found"
+      ) {
+        toast.error(
+          "No account found with this email."
+        );
+
+      } else if (
+        error.code === "auth/wrong-password"
+      ) {
+        toast.error(
+          "Incorrect password."
+        );
+
+      } else if (
+        error.code === "auth/too-many-requests"
+      ) {
+        toast.error(
+          "Too many login attempts. Please try again later."
+        );
+
+      } else {
+        toast.error(
+          "Unable to sign in. Please try again."
+        );
+      }
+
+    } finally {
+      setLoading(false);
     }
-
   }
 
   return (
+    <div className="min-h-screen bg-[#FFF8ED] flex items-center justify-center px-6 py-12">
 
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="w-full max-w-md">
 
-      <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md">
-        <div className="flex items-center gap-3 mb-8">
-  <h1 className="text-3xl font-bold">
-    Rent<span className="text-blue-600">ACar</span>
-  </h1>
-</div>
-<Link
-  to="/"
-  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium mb-8 transition"
->
-  <FaArrowLeft />
-  Back to Home
-</Link>
-        <h1 className="text-4xl font-bold mb-2">
-          Welcome Back
-        </h1>
+        {/* ==========================================
+            BRAND
+        ========================================== */}
 
-        <p className="text-gray-500 mb-8">
-          Login to your RentACar account.
-        </p>
+        <div className="text-center mb-8">
 
-        <form onSubmit={handleLogin}>
+          <h1 className="text-4xl font-bold text-gray-900">
+            Rent<span className="text-orange-500">ACar</span>
+          </h1>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            className="w-full border rounded-xl p-4 mb-4"
-          />
+          <p className="text-gray-500 mt-2">
+            Iloilo Community Car Rental
+          </p>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-            className="w-full border rounded-xl p-4 mb-6"
-          />
-<div className="flex justify-end mb-6">
-  <button
-    type="button"
-    className="text-sm text-blue-600 hover:underline"
-  >
-    Forgot Password?
-  </button>
-</div>
-          <button
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold transition"
+        </div>
+
+        {/* ==========================================
+            LOGIN CARD
+        ========================================== */}
+
+        <div className="
+          bg-white
+          rounded-3xl
+          shadow-xl
+          border
+          border-orange-100
+          p-8
+          sm:p-10
+        ">
+
+          {/* Back to Home */}
+
+          <Link
+            to="/"
+            className="
+              inline-flex
+              items-center
+              gap-2
+              text-orange-500
+              hover:text-orange-600
+              font-medium
+              mb-8
+              transition
+            "
           >
-            Login
-          </button>
-<div className="text-center mt-6">
-  <p className="text-gray-500">
-    Don't have an account?
-  </p>
+            <FaArrowLeft />
+            Back to Home
+          </Link>
 
-  <Link
-  to="/register"
-  className="text-blue-600 hover:underline font-semibold"
->
-  Create one
-</Link>
-</div>
-        </form>
+          {/* Header */}
+
+          <h2 className="
+            text-4xl
+            font-bold
+            text-gray-900
+          ">
+            Welcome Back
+          </h2>
+
+          <p className="
+            text-gray-500
+            mt-3
+          ">
+            Sign in and get back on the road.
+          </p>
+
+          {/* ==========================================
+              FORM
+          ========================================== */}
+
+          <form
+            onSubmit={handleLogin}
+            className="mt-8 space-y-6"
+          >
+
+            {/* Email */}
+
+            <div>
+
+              <label className="
+                block
+                text-sm
+                font-semibold
+                text-gray-700
+                mb-2
+              ">
+                Email Address
+              </label>
+
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+                className="
+                  w-full
+                  border
+                  border-gray-200
+                  bg-gray-50
+                  rounded-xl
+                  px-4
+                  py-4
+                  outline-none
+                  focus:border-orange-500
+                  focus:ring-2
+                  focus:ring-orange-100
+                  transition
+                "
+                required
+              />
+
+            </div>
+
+            {/* Password */}
+
+            <div>
+
+              <label className="
+                block
+                text-sm
+                font-semibold
+                text-gray-700
+                mb-2
+              ">
+                Password
+              </label>
+
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                className="
+                  w-full
+                  border
+                  border-gray-200
+                  bg-gray-50
+                  rounded-xl
+                  px-4
+                  py-4
+                  outline-none
+                  focus:border-orange-500
+                  focus:ring-2
+                  focus:ring-orange-100
+                  transition
+                "
+                required
+              />
+
+            </div>
+
+            {/* Forgot Password */}
+
+            <div className="flex justify-end">
+
+              <button
+                type="button"
+                className="
+                  text-sm
+                  text-orange-500
+                  hover:text-orange-600
+                  font-medium
+                "
+              >
+                Forgot Password?
+              </button>
+
+            </div>
+
+            {/* Login Button */}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`
+                w-full
+                py-4
+                rounded-xl
+                font-semibold
+                text-white
+                transition
+                ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-orange-500 hover:bg-orange-600 shadow-lg hover:shadow-xl"
+                }
+              `}
+            >
+              {loading
+                ? "Signing In..."
+                : "Sign In"}
+            </button>
+
+          </form>
+
+          {/* Register */}
+
+          <div className="text-center mt-8">
+
+            <p className="text-gray-500">
+              Don't have an account?
+            </p>
+
+            <Link
+              to="/register"
+              className="
+                inline-block
+                mt-1
+                text-orange-500
+                hover:text-orange-600
+                font-semibold
+              "
+            >
+              Create one
+            </Link>
+
+          </div>
+
+        </div>
 
       </div>
 
     </div>
-
   );
-
 }
 
 export default Login;

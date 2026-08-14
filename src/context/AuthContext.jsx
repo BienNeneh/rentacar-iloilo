@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../firebase/firebase";
+import { auth, db } from "../firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { db } from "../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 const AuthContext = createContext();
@@ -12,51 +11,62 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (currentUser) => {
+        try {
+          setUser(currentUser);
 
-   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+          if (currentUser) {
+            const docRef = doc(
+              db,
+              "users",
+              currentUser.uid
+            );
 
-  setUser(currentUser);
+            const docSnap = await getDoc(docRef);
 
-  if (currentUser) {
-    const docRef = doc(db, "users", currentUser.uid);
-    const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              setUserProfile(docSnap.data());
+            } else {
+              setUserProfile(null);
+            }
+          } else {
+            setUserProfile(null);
+          }
+        } catch (error) {
+          console.error(
+            "Auth Context Error:",
+            error
+          );
 
-    if (docSnap.exists()) {
-      setUserProfile(docSnap.data());
-    } else {
-      setUserProfile(null);
-    }
-  } else {
-    setUserProfile(null);
-  }
-
-  setLoading(false);
-
-});
+          setUserProfile(null);
+        } finally {
+          setLoading(false);
+        }
+      }
+    );
 
     return unsubscribe;
-
   }, []);
 
   return (
+    <AuthContext.Provider
+      value={{
+        user,
+        userProfile,
+        loading,
 
-  <AuthContext.Provider
-  value={{
-    user,
-    userProfile,
-  }}
->
-
+        // Easy way to check verification anywhere
+        isEmailVerified:
+          user?.emailVerified === true,
+      }}
+    >
       {!loading && children}
-
     </AuthContext.Provider>
-
   );
-
 }
 
 export function useAuth() {
-
   return useContext(AuthContext);
-
 }

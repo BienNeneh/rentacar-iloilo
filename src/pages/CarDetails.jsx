@@ -1,17 +1,29 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
 import { db, auth } from "../firebase/firebase";
+
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import CarGallery from "../components/car/CarGallery";
 import CarFeatures from "../components/car/CarFeatures";
 import BookingCard from "../components/car/BookingCard";
 import HostCard from "../components/car/HostCard";
 import CarDescription from "../components/car/CarDescription";
-import CarInfo from "../components/car/CarInfo";
 import FullscreenGallery from "../components/car/FullscreenGallery";
+
 import toast from "react-hot-toast";
 import { createNotification } from "../services/notificationService";
-import { FaArrowLeft } from "react-icons/fa";
+
+import {
+  FaArrowLeft,
+  FaMapMarkerAlt,
+  FaCarSide,
+  FaUsers,
+  FaCog,
+  FaGasPump,
+  FaCalendarAlt,
+} from "react-icons/fa";
+
 import {
   addDoc,
   collection,
@@ -22,86 +34,118 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
+
 function CarDetails() {
   const [unavailableDates, setUnavailableDates] = useState([]);
+
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [totalDays, setTotalDays] = useState(0);
   const [estimatedTotal, setEstimatedTotal] = useState(0);
+
   const [car, setCar] = useState(null);
+
   const [currentImage, setCurrentImage] = useState("");
   const [showGallery, setShowGallery] = useState(false);
+
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
+
   const [selectedRange, setSelectedRange] = useState(null);
-  // Fetch car from Firestore
- const isOwner =
-  auth.currentUser &&
-  car &&
-  auth.currentUser.uid === car.ownerId;
+
+  // =========================================================
+  // Check if current user owns this vehicle
+  // =========================================================
+
+  const isOwner =
+    auth.currentUser &&
+    car &&
+    auth.currentUser.uid === car.ownerId;
+
+  // =========================================================
+  // Fetch Car
+  // =========================================================
+
   useEffect(() => {
-  async function fetchCar() {
-    try {
-      const docRef = doc(db, "cars", id);
-      const docSnap = await getDoc(docRef);
+    async function fetchCar() {
+      try {
+        const docRef = doc(db, "cars", id);
+        const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
+        if (docSnap.exists()) {
+          const carData = {
+            id: docSnap.id,
+            ...docSnap.data(),
+          };
 
-        const carData = {
-          id: docSnap.id,
-          ...docSnap.data(),
-        };
+          setCar(carData);
 
-        setCar(carData);
-        // Fetch approved bookings
-        const bookingQuery = query(
-          collection(db, "bookings"),
-          where("carId", "==", id),
-          where("status", "==", "Approved")
-        );
+          // Fetch approved bookings
+          const bookingQuery = query(
+            collection(db, "bookings"),
+            where("carId", "==", id),
+            where("status", "==", "Approved")
+          );
 
-        const bookingSnapshot = await getDocs(bookingQuery);
+          const bookingSnapshot = await getDocs(
+            bookingQuery
+          );
 
-        const bookedDates = bookingSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+          const bookedDates = bookingSnapshot.docs.map(
+            (bookingDoc) => ({
+              id: bookingDoc.id,
+              ...bookingDoc.data(),
+            })
+          );
 
-        setUnavailableDates(bookedDates);
+          setUnavailableDates(bookedDates);
+        }
+      } catch (error) {
+        console.error(error);
       }
-
-    } catch (error) {
-      console.error(error);
     }
-  }
 
-  fetchCar();
-}, [id]);
-useEffect(() => {
+    fetchCar();
+  }, [id]);
 
-  if (!car) return;
+  // =========================================================
+  // Calculate Rental
+  // =========================================================
 
-  if (!pickupDate || !returnDate) {
-    setTotalDays(0);
-    setEstimatedTotal(0);
-    return;
-  }
+  useEffect(() => {
+    if (!car) return;
 
-  const pickup = new Date(pickupDate);
-  const dropoff = new Date(returnDate);
+    if (!pickupDate || !returnDate) {
+      setTotalDays(0);
+      setEstimatedTotal(0);
+      return;
+    }
 
-  const diff =
-    Math.ceil((dropoff - pickup) / (1000 * 60 * 60 * 24));
+    const pickup = new Date(pickupDate);
+    const dropoff = new Date(returnDate);
 
-  if (diff > 0) {
-    setTotalDays(diff);
-    setEstimatedTotal(diff * Number(car.price));
-  } else {
-    setTotalDays(0);
-    setEstimatedTotal(0);
-  }
-}, [pickupDate, returnDate, car]);
-  // Set first image
+    const diff = Math.ceil(
+      (dropoff - pickup) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    if (diff > 0) {
+      setTotalDays(diff);
+
+      setEstimatedTotal(
+        diff * Number(car.price || 0)
+      );
+    } else {
+      setTotalDays(0);
+      setEstimatedTotal(0);
+    }
+  }, [pickupDate, returnDate, car]);
+
+  // =========================================================
+  // Set First Image
+  // =========================================================
+
   useEffect(() => {
     if (!car) return;
 
@@ -112,274 +156,962 @@ useEffect(() => {
     }
   }, [car]);
 
-  // Loading screen
+  // =========================================================
+  // Loading
+  // =========================================================
+
   if (!car) {
     return (
-        <div className="min-h-screen flex justify-center items-center">
-            <h1 className="text-4xl font-bold">
-                Loading...
-            </h1>
-        </div>
-    );
-}
+      <>
+        <DashboardNavbar />
 
-  // Supports old "image" field and future "images" array
+        <div className="min-h-screen bg-[#fff8ef] flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-5xl mb-4">
+              🚗
+            </div>
+
+            <h1 className="text-2xl font-bold text-gray-900">
+              Loading vehicle...
+            </h1>
+
+            <p className="text-gray-500 mt-2">
+              Preparing your ride.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // =========================================================
+  // Images
+  // =========================================================
+
   const images =
-  
     car.images?.length > 0
       ? car.images
       : car.image
       ? [car.image]
       : [];
 
-  const currentIndex = images.indexOf(currentImage);
+  const currentIndex =
+    images.indexOf(currentImage);
+
   const nextImage = () => {
     if (images.length <= 1) return;
 
-    const next = (currentIndex + 1) % images.length;
+    const next =
+      (currentIndex + 1) % images.length;
+
     setCurrentImage(images[next]);
   };
 
   const previousImage = () => {
     if (images.length <= 1) return;
 
-    const prev = (currentIndex - 1 + images.length) % images.length;
-    setCurrentImage(images[prev]);
+    const previous =
+      (currentIndex - 1 + images.length) %
+      images.length;
+
+    setCurrentImage(images[previous]);
   };
- const requestBooking = async () => {
-  if (!auth.currentUser) {
-    toast.error("Please login first.");
-    return;
-  }
 
-  if (!pickupDate || !returnDate) {
-    toast.error("Please select your rental dates.");
-    return;
-  }
+  // =========================================================
+  // Request Booking
+  // =========================================================
 
-  try {
-    // =========================
-    // Check for Approved Bookings
-    // =========================
-
-    const bookingQuery = query(
-      collection(db, "bookings"),
-      where("carId", "==", car.id),
-      where("status", "==", "Approved")
-    );
-
-    const snapshot = await getDocs(bookingQuery);
-
-    let hasConflict = false;
-
-    snapshot.forEach((bookingDoc) => {
-      const booking = bookingDoc.data();
-
-      const existingPickup = new Date(
-        booking.pickupDate
-      );
-
-      const existingReturn = new Date(
-        booking.returnDate
-      );
-
-      const newPickup = new Date(pickupDate);
-      const newReturn = new Date(returnDate);
-
-      const overlaps =
-        newPickup <= existingReturn &&
-        newReturn >= existingPickup;
-
-      if (overlaps) {
-        hasConflict = true;
-      }
-    });
-
-    if (hasConflict) {
-      toast.error(
-        "This vehicle is already booked for the selected dates."
-      );
-
+  const requestBooking = async () => {
+    if (!auth.currentUser) {
+      toast.error("Please login first.");
       return;
     }
 
-    // =========================
-    // Create Booking
-    // =========================
+    if (!pickupDate || !returnDate) {
+      toast.error(
+        "Please select your rental dates."
+      );
+      return;
+    }
 
-    const bookingRef = await addDoc(
-      collection(db, "bookings"),
-      {
-        carId: car.id,
+    try {
+      // =====================================================
+      // Check Approved Bookings
+      // =====================================================
 
-        renterId: auth.currentUser.uid,
-        renterEmail: auth.currentUser.email,
-        renterName:
-          auth.currentUser.displayName || "Renter",
+      const bookingQuery = query(
+        collection(db, "bookings"),
+        where("carId", "==", car.id),
+        where("status", "==", "Approved")
+      );
 
-        ownerId: car.ownerId,
-        ownerEmail: car.ownerEmail,
+      const snapshot = await getDocs(
+        bookingQuery
+      );
 
-        pickupDate,
-        returnDate,
+      let hasConflict = false;
 
-        rentalDays: totalDays,
+      snapshot.forEach((bookingDoc) => {
+        const booking = bookingDoc.data();
 
-        totalPrice: estimatedTotal,
+        const existingPickup = new Date(
+          booking.pickupDate
+        );
 
-        status: "Pending",
+        const existingReturn = new Date(
+          booking.returnDate
+        );
 
-        createdAt: serverTimestamp(),
+        const newPickup = new Date(
+          pickupDate
+        );
+
+        const newReturn = new Date(
+          returnDate
+        );
+
+        const overlaps =
+          newPickup <= existingReturn &&
+          newReturn >= existingPickup;
+
+        if (overlaps) {
+          hasConflict = true;
+        }
+      });
+
+      if (hasConflict) {
+        toast.error(
+          "This vehicle is already booked for the selected dates."
+        );
+
+        return;
       }
-    );
 
-    // =========================
-    // Notify Vehicle Owner
-    // =========================
+      // =====================================================
+      // Create Booking
+      // =====================================================
 
-    await createNotification({
-      userId: car.ownerId,
-      type: "bookingRequested",
-      title: "New Booking Request",
-      subtitle: `${car.brand} ${car.model}`,
-      message:
-        "A renter has requested to book your vehicle.",
-      bookingId: bookingRef.id,
-      carId: car.id,
-    });
+      const bookingRef = await addDoc(
+        collection(db, "bookings"),
+        {
+          carId: car.id,
 
-    // =========================
-    // Success
-    // =========================
+          renterId: auth.currentUser.uid,
 
-    toast.success("Booking request sent!");
+          renterEmail:
+            auth.currentUser.email,
 
-  } catch (error) {
-    console.error(
-      "Booking Request Error:",
-      error
-    );
+          renterName:
+            auth.currentUser.displayName ||
+            "Renter",
 
-    toast.error(
-      "Something went wrong."
-    );
-  }
-};
+          ownerId: car.ownerId,
+
+          ownerEmail: car.ownerEmail,
+
+          pickupDate,
+          returnDate,
+
+          rentalDays: totalDays,
+
+          totalPrice: estimatedTotal,
+
+          status: "Pending",
+
+          createdAt: serverTimestamp(),
+        }
+      );
+
+      // =====================================================
+      // Notify Owner
+      // =====================================================
+
+      await createNotification({
+        userId: car.ownerId,
+
+        type: "bookingRequested",
+
+        title: "New Booking Request",
+
+        subtitle: `${car.brand} ${car.model}`,
+
+        message:
+          "A renter has requested to book your vehicle.",
+
+        bookingId: bookingRef.id,
+
+        carId: car.id,
+      });
+
+      // =====================================================
+      // Success
+      // =====================================================
+
+      toast.success(
+        "Booking request sent!"
+      );
+    } catch (error) {
+      console.error(
+        "Booking Request Error:",
+        error
+      );
+
+      toast.error(
+        "Something went wrong."
+      );
+    }
+  };
+
   return (
     <>
-    <DashboardNavbar />
-      <div className="min-h-screen bg-gray-100 py-10">
-        <div className="max-w-7xl mx-auto px-6">
-          <button
-    onClick={() => navigate("/list-car")}
-    className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold mb-8 transition"
->
-  <FaArrowLeft />
-  Back to Browse Cars
-</button>
+      <DashboardNavbar />
 
-        <div className="
-grid
-grid-cols-1
-xl:grid-cols-2
-gap-6
-xl:gap-10
-">
+      <main className="min-h-screen bg-[#fff8ef]">
 
-            {/* LEFT */}
-         
+        {/* =================================================
+            Sunset Header Glow
+        ================================================= */}
 
+        <div className="relative overflow-hidden">
 
-<CarGallery
-  car={car}
-  images={images}
-  currentImage={currentImage}
-  setCurrentImage={setCurrentImage}
-  setShowGallery={setShowGallery}
-/>
+          <div className="
+            absolute
+            inset-x-0
+            top-0
+            h-72
+            bg-gradient-to-b
+            from-orange-100
+            via-pink-50
+            to-transparent
+            pointer-events-none
+          " />
 
-          
+          <div className="
+            relative
+            max-w-7xl
+            mx-auto
+            px-4
+            sm:px-6
+            lg:px-8
+            pt-6
+            sm:pt-8
+            lg:pt-10
+            pb-12
+          ">
 
-            {/* RIGHT */}
-            <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
+            {/* =================================================
+                Back Button
+            ================================================= */}
 
-               <CarInfo car={car} />
+            <button
+              onClick={() =>
+                navigate("/list-car")
+              }
+              className="
+                inline-flex
+                items-center
+                gap-2
+                text-orange-600
+                hover:text-orange-700
+                font-semibold
+                mb-7
+                transition
+              "
+            >
+              <FaArrowLeft />
 
-{/* FEATURES */}
+              Back to Browse Cars
+            </button>
 
-<CarFeatures />
+            {/* =================================================
+                Main Vehicle Area
+            ================================================= */}
 
-{isOwner ? (
+            <div className="
+              grid
+              grid-cols-1
+              xl:grid-cols-[1.15fr_0.85fr]
+              gap-6
+              lg:gap-8
+              items-start
+            ">
 
-  <div className="mt-10 border border-blue-200 rounded-2xl p-6 bg-blue-50">
+              {/* =================================================
+                  Gallery
+              ================================================= */}
 
-    <h2 className="text-2xl font-bold text-blue-700">
-      🚗 Your Vehicle
-    </h2>
+              <div className="
+                bg-white
+                rounded-[2rem]
+                p-3
+                sm:p-4
+                shadow-xl
+                border
+                border-orange-100
+              ">
 
-    <p className="mt-4 text-gray-700">
-      You own this listing.
-    </p>
+                <CarGallery
+                  car={car}
+                  images={images}
+                  currentImage={currentImage}
+                  setCurrentImage={
+                    setCurrentImage
+                  }
+                  setShowGallery={
+                    setShowGallery
+                  }
+                />
 
-    <p className="text-gray-500 mt-2">
-      You can't rent your own vehicle, but you can manage it below.
-    </p>
+              </div>
 
-  </div>
+              {/* =================================================
+                  Vehicle Summary
+              ================================================= */}
 
-) : (
+              <div className="
+                bg-white
+                rounded-[2rem]
+                shadow-xl
+                border
+                border-orange-100
+                overflow-hidden
+              ">
 
-  <BookingCard
-    car={car}
-    unavailableDates={unavailableDates}
-    selectedRange={selectedRange}
-    setSelectedRange={setSelectedRange}
-    pickupDate={pickupDate}
-    returnDate={returnDate}
-    setPickupDate={setPickupDate}
-    setReturnDate={setReturnDate}
-    totalDays={totalDays}
-    estimatedTotal={estimatedTotal}
-    requestBooking={requestBooking}
-  />
+                {/* Sunset Accent */}
 
-)}
+                <div className="
+                  h-2
+                  bg-gradient-to-r
+                  from-orange-400
+                  via-pink-400
+                  to-purple-400
+                " />
 
-{/* DESCRIPTION */}
+                <div className="p-6 sm:p-8">
 
-<CarDescription
-  description={car.description}
-/>
+                  {/* Vehicle Type */}
 
-{/* OWNER */}
+                  <div className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    bg-orange-50
+                    text-orange-700
+                    px-3
+                    py-1.5
+                    rounded-full
+                    text-sm
+                    font-semibold
+                  ">
+                    <FaCarSide />
 
-<HostCard
-    ownerName={car.ownerName}
-    ownerEmail={car.ownerEmail}
-/>
+                    {car.vehicleType ||
+                      "Vehicle"}
+                  </div>
 
-</div> {/* RIGHT */}
+                  {/* Name */}
 
-</div> {/* GRID */}
+                  <h1 className="
+                    text-3xl
+                    sm:text-4xl
+                    lg:text-5xl
+                    font-extrabold
+                    text-gray-900
+                    mt-4
+                    tracking-tight
+                  ">
+                    {car.brand} {car.model}
+                  </h1>
 
-</div> {/* max-w-7xl */}
+                  {/* Year */}
 
-</div> {/* min-h-screen */}
+                  <p className="
+                    text-gray-500
+                    mt-2
+                    font-medium
+                  ">
+                    {car.vehicleType ||
+                      "Vehicle"}{" "}
+                    <span className="mx-2">
+                      •
+                    </span>
+                    {car.year || "—"}
+                  </p>
 
-      {/* FULLSCREEN GALLERY */}
-    <FullscreenGallery
-  showGallery={showGallery}
-  setShowGallery={setShowGallery}
-  currentImage={currentImage}
-  images={images}
-  currentIndex={currentIndex}
-  previousImage={previousImage}
-  nextImage={nextImage}
-  car={car}
-/>
-      
+                  {/* Location */}
+
+                  <div className="
+                    flex
+                    items-center
+                    gap-2
+                    mt-5
+                    text-gray-600
+                  ">
+                    <FaMapMarkerAlt className="text-orange-500" />
+
+                    <span>
+                      {car.location ||
+                        "Iloilo"}
+                    </span>
+                  </div>
+
+                  {/* Price */}
+
+                  <div className="
+                    mt-7
+                    pt-6
+                    border-t
+                    border-gray-100
+                  ">
+
+                    <span className="
+                      text-4xl
+                      sm:text-5xl
+                      font-extrabold
+                      text-orange-600
+                    ">
+                      ₱
+                      {Number(
+                        car.price || 0
+                      ).toLocaleString()}
+                    </span>
+
+                    <span className="
+                      text-gray-500
+                      ml-2
+                      font-medium
+                    ">
+                      / day
+                    </span>
+
+                  </div>
+
+                  {/* Vehicle Specs */}
+
+                  <div className="
+                    grid
+                    grid-cols-2
+                    gap-3
+                    mt-7
+                  ">
+
+                    {/* Transmission */}
+
+                    <div className="
+                      rounded-2xl
+                      bg-orange-50
+                      border
+                      border-orange-100
+                      p-4
+                    ">
+
+                      <FaCog className="
+                        text-orange-500
+                        mb-2
+                      " />
+
+                      <p className="
+                        text-xs
+                        text-gray-500
+                      ">
+                        Transmission
+                      </p>
+
+                      <p className="
+                        font-bold
+                        text-gray-900
+                        mt-1
+                      ">
+                        {car.transmission ||
+                          "—"}
+                      </p>
+
+                    </div>
+
+                    {/* Seats */}
+
+                    <div className="
+                      rounded-2xl
+                      bg-pink-50
+                      border
+                      border-pink-100
+                      p-4
+                    ">
+
+                      <FaUsers className="
+                        text-pink-500
+                        mb-2
+                      " />
+
+                      <p className="
+                        text-xs
+                        text-gray-500
+                      ">
+                        Seats
+                      </p>
+
+                      <p className="
+                        font-bold
+                        text-gray-900
+                        mt-1
+                      ">
+                        {car.seats || "—"}
+                      </p>
+
+                    </div>
+
+                    {/* Fuel */}
+
+                    <div className="
+                      rounded-2xl
+                      bg-amber-50
+                      border
+                      border-amber-100
+                      p-4
+                    ">
+
+                      <FaGasPump className="
+                        text-amber-600
+                        mb-2
+                      " />
+
+                      <p className="
+                        text-xs
+                        text-gray-500
+                      ">
+                        Fuel Type
+                      </p>
+
+                      <p className="
+                        font-bold
+                        text-gray-900
+                        mt-1
+                      ">
+                        {car.fuelType ||
+                          "—"}
+                      </p>
+
+                    </div>
+
+                    {/* Year */}
+
+                    <div className="
+                      rounded-2xl
+                      bg-purple-50
+                      border
+                      border-purple-100
+                      p-4
+                    ">
+
+                      <FaCalendarAlt className="
+                        text-purple-500
+                        mb-2
+                      " />
+
+                      <p className="
+                        text-xs
+                        text-gray-500
+                      ">
+                        Year
+                      </p>
+
+                      <p className="
+                        font-bold
+                        text-gray-900
+                        mt-1
+                      ">
+                        {car.year || "—"}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+            {/* =================================================
+                Lower Content
+            ================================================= */}
+
+            <div className="
+              grid
+              grid-cols-1
+              xl:grid-cols-[1fr_0.9fr]
+              gap-6
+              lg:gap-8
+              mt-8
+              items-start
+            ">
+
+              {/* =================================================
+                  Left Column
+              ================================================= */}
+
+              <div className="space-y-6">
+
+                {/* Features */}
+
+                <section className="
+                  bg-white
+                  rounded-[2rem]
+                  shadow-lg
+                  border
+                  border-orange-100
+                  p-6
+                  sm:p-8
+                ">
+
+                  <div className="
+                    flex
+                    items-center
+                    gap-3
+                    mb-6
+                  ">
+
+                    <div className="
+                      w-11
+                      h-11
+                      rounded-2xl
+                      bg-orange-100
+                      text-orange-600
+                      flex
+                      items-center
+                      justify-center
+                      text-xl
+                    ">
+                      ✨
+                    </div>
+
+                    <div>
+                      <h2 className="
+                        text-2xl
+                        font-bold
+                        text-gray-900
+                      ">
+                        Features
+                      </h2>
+
+                      <p className="
+                        text-sm
+                        text-gray-500
+                      ">
+                        Everything included with
+                        this vehicle.
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <CarFeatures />
+
+                </section>
+
+                {/* Description */}
+
+                <section className="
+                  bg-white
+                  rounded-[2rem]
+                  shadow-lg
+                  border
+                  border-orange-100
+                  p-6
+                  sm:p-8
+                ">
+
+                  <div className="
+                    flex
+                    items-center
+                    gap-3
+                    mb-5
+                  ">
+
+                    <div className="
+                      w-11
+                      h-11
+                      rounded-2xl
+                      bg-pink-100
+                      text-pink-600
+                      flex
+                      items-center
+                      justify-center
+                    ">
+                      📖
+                    </div>
+
+                    <h2 className="
+                      text-2xl
+                      font-bold
+                      text-gray-900
+                    ">
+                      About This Vehicle
+                    </h2>
+
+                  </div>
+
+                  <CarDescription
+                    description={
+                      car.description
+                    }
+                  />
+
+                </section>
+
+                {/* Host */}
+
+                <section className="
+                  bg-white
+                  rounded-[2rem]
+                  shadow-lg
+                  border
+                  border-orange-100
+                  p-6
+                  sm:p-8
+                ">
+
+                  <HostCard
+                    ownerName={
+                      car.ownerName
+                    }
+                    ownerEmail={
+                      car.ownerEmail
+                    }
+                  />
+
+                </section>
+
+              </div>
+
+              {/* =================================================
+                  Right Column - Booking
+              ================================================= */}
+
+              <div className="
+                xl:sticky
+                xl:top-24
+              ">
+
+                {isOwner ? (
+
+                  <div className="
+                    bg-white
+                    rounded-[2rem]
+                    shadow-xl
+                    border
+                    border-orange-100
+                    overflow-hidden
+                  ">
+
+                    <div className="
+                      h-2
+                      bg-gradient-to-r
+                      from-orange-400
+                      via-pink-400
+                      to-purple-400
+                    " />
+
+                    <div className="
+                      p-6
+                      sm:p-8
+                    ">
+
+                      <div className="
+                        w-14
+                        h-14
+                        rounded-2xl
+                        bg-orange-100
+                        flex
+                        items-center
+                        justify-center
+                        text-2xl
+                        mb-5
+                      ">
+                        🚗
+                      </div>
+
+                      <h2 className="
+                        text-2xl
+                        font-bold
+                        text-gray-900
+                      ">
+                        Your Vehicle
+                      </h2>
+
+                      <p className="
+                        text-gray-600
+                        mt-3
+                        leading-relaxed
+                      ">
+                        You own this listing.
+                      </p>
+
+                      <p className="
+                        text-gray-500
+                        mt-2
+                        leading-relaxed
+                      ">
+                        You can't rent your own
+                        vehicle, but you can manage
+                        it from your vehicle dashboard.
+                      </p>
+
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/manage-car/${car.id}`
+                          )
+                        }
+                        className="
+                          w-full
+                          mt-6
+                          bg-orange-500
+                          hover:bg-orange-600
+                          text-white
+                          py-4
+                          rounded-2xl
+                          font-bold
+                          transition
+                          shadow-lg
+                        "
+                      >
+                        Manage Vehicle
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                ) : (
+
+                  <div className="
+                    bg-white
+                    rounded-[2rem]
+                    shadow-xl
+                    border
+                    border-orange-100
+                    overflow-hidden
+                  ">
+
+                    <div className="
+                      h-2
+                      bg-gradient-to-r
+                      from-orange-400
+                      via-pink-400
+                      to-purple-400
+                    " />
+
+                    <div className="
+                      p-5
+                      sm:p-7
+                    ">
+
+                      <div className="
+                        flex
+                        items-center
+                        gap-3
+                        mb-5
+                      ">
+
+                        <div className="
+                          w-11
+                          h-11
+                          rounded-2xl
+                          bg-orange-100
+                          text-orange-600
+                          flex
+                          items-center
+                          justify-center
+                        ">
+                          📅
+                        </div>
+
+                        <div>
+                          <h2 className="
+                            text-2xl
+                            font-bold
+                            text-gray-900
+                          ">
+                            Book This Car
+                          </h2>
+
+                          <p className="
+                            text-sm
+                            text-gray-500
+                          ">
+                            Choose your rental dates.
+                          </p>
+                        </div>
+
+                      </div>
+
+                      <BookingCard
+                        car={car}
+                        unavailableDates={
+                          unavailableDates
+                        }
+                        selectedRange={
+                          selectedRange
+                        }
+                        setSelectedRange={
+                          setSelectedRange
+                        }
+                        pickupDate={
+                          pickupDate
+                        }
+                        returnDate={
+                          returnDate
+                        }
+                        setPickupDate={
+                          setPickupDate
+                        }
+                        setReturnDate={
+                          setReturnDate
+                        }
+                        totalDays={
+                          totalDays
+                        }
+                        estimatedTotal={
+                          estimatedTotal
+                        }
+                        requestBooking={
+                          requestBooking
+                        }
+                      />
+
+                    </div>
+
+                  </div>
+
+                )}
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </main>
+
+      {/* =================================================
+          Fullscreen Gallery
+      ================================================= */}
+
+      <FullscreenGallery
+        showGallery={showGallery}
+        setShowGallery={setShowGallery}
+        currentImage={currentImage}
+        images={images}
+        currentIndex={currentIndex}
+        previousImage={previousImage}
+        nextImage={nextImage}
+        car={car}
+      />
+
     </>
   );
-
 }
+
 export default CarDetails;
