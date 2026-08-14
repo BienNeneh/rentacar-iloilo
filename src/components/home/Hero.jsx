@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
 import {
   FaArrowRight,
   FaMapMarkerAlt,
@@ -13,10 +12,10 @@ import heroRoadtrip from "../../assets/images/hero-roadtrip.png";
 
 function Hero() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
 
   function handleBecomeHost() {
-    if (user) {
+    if (currentUser) {
       navigate("/add-car");
     } else {
       navigate("/signup");
@@ -26,33 +25,24 @@ function Hero() {
   return (
     <section className="relative overflow-hidden bg-[#FFF8ED]">
 
-      {/* ==========================================
-          BACKGROUND IMAGE
-      ========================================== */}
-
+      {/* Background Image */}
       <div className="absolute inset-0">
-
         <img
           src={heroRoadtrip}
-          alt="Road trip through Iloilo"
+          alt="Road Trip"
           draggable={false}
           className="
             w-full
             h-full
             object-cover
-            object-[72%_50%]
-            sm:object-[75%_50%]
+            object-[75%_50%]
             lg:object-[82%_40%]
             select-none
           "
         />
-
       </div>
 
-      {/* ==========================================
-          DESKTOP OVERLAY
-      ========================================== */}
-
+      {/* Desktop Overlay */}
       <div
         className="
           hidden
@@ -60,19 +50,16 @@ function Hero() {
           absolute
           inset-y-0
           left-0
-          w-[48%]
+          w-[42%]
           bg-gradient-to-r
           from-[#FFF8ED]
-          via-[#FFF8ED]/90
+          via-[#FFF8ED]/80
           to-transparent
           z-10
         "
       />
 
-      {/* ==========================================
-          MOBILE OVERLAY
-      ========================================== */}
-
+      {/* Mobile Overlay */}
       <div
         className="
           lg:hidden
@@ -80,62 +67,27 @@ function Hero() {
           inset-0
           bg-gradient-to-b
           from-[#FFF8ED]/95
-          via-[#FFF8ED]/70
-          via-[55%]
-          to-[#FFF8ED]/20
+          via-[#FFF8ED]/55
+          to-transparent
           z-10
         "
       />
 
-      {/* ==========================================
-          CONTENT
-      ========================================== */}
+      {/* Content */}
+      <div className="relative z-20 max-w-7xl mx-auto px-6 lg:px-16">
 
-      <div
-        className="
-          relative
-          z-20
-          max-w-7xl
-          mx-auto
-          px-5
-          sm:px-8
-          lg:px-16
-        "
-      >
+        <div className="min-h-[720px] lg:min-h-[850px] flex items-center">
 
-        <div
-          className="
-            min-h-[900px]
-            sm:min-h-[850px]
-            lg:min-h-[850px]
-            flex
-            items-start
-            lg:items-center
-          "
-        >
+          <div className="max-w-3xl py-16 sm:py-20 lg:py-0">
 
-          <div
-            className="
-              w-full
-              max-w-3xl
-              pt-10
-              sm:pt-16
-              lg:pt-0
-              pb-20
-            "
-          >
-
-            {/* ==========================================
-                BADGE
-            ========================================== */}
-
+            {/* Badge */}
             <div
               className="
                 inline-flex
                 items-center
                 gap-2
                 rounded-full
-                bg-white/95
+                bg-white/90
                 backdrop-blur
                 px-4
                 py-2
@@ -146,28 +98,21 @@ function Hero() {
               "
             >
               <FaMapMarkerAlt />
-
               Community Powered in Iloilo
             </div>
 
-            {/* ==========================================
-                HEADING
-            ========================================== */}
-
+            {/* Heading */}
             <h1
               className="
-                mt-6
-                sm:mt-8
+                mt-8
                 text-4xl
                 sm:text-5xl
                 lg:text-7xl
                 font-black
-                leading-[1.08]
+                leading-tight
                 text-[#3A2A27]
-                max-w-2xl
               "
             >
-
               Every Journey
 
               <span className="block text-orange-500">
@@ -175,24 +120,17 @@ function Hero() {
               </span>
 
               The Right Ride.
-
             </h1>
 
-            {/* ==========================================
-                DESCRIPTION
-            ========================================== */}
-
+            {/* Description */}
             <p
               className="
-                mt-5
-                sm:mt-6
+                mt-6
                 text-base
                 sm:text-lg
                 lg:text-xl
-                leading-7
-                sm:leading-8
+                leading-8
                 text-[#5C463B]
-                max-w-2xl
               "
             >
               Discover trusted vehicles shared by your local community.
@@ -200,29 +138,13 @@ function Hero() {
               or visiting family, your next adventure starts here.
             </p>
 
-            {/* ==========================================
-                BUTTONS
-            ========================================== */}
+            {/* Buttons */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
 
-            <div
-              className="
-                mt-7
-                sm:mt-8
-                flex
-                flex-col
-                sm:flex-row
-                gap-3
-                sm:gap-4
-                max-w-xl
-              "
-            >
-
+              {/* Explore Cars */}
               <button
-                type="button"
                 onClick={() => navigate("/list-car")}
                 className="
-                  w-full
-                  sm:w-auto
                   bg-orange-500
                   hover:bg-orange-600
                   text-white
@@ -232,21 +154,15 @@ function Hero() {
                   font-bold
                   shadow-xl
                   transition
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
                 "
               >
                 🚗 Explore Cars
               </button>
 
+              {/* Become a Host */}
               <button
-                type="button"
                 onClick={handleBecomeHost}
                 className="
-                  w-full
-                  sm:w-auto
                   bg-white
                   rounded-2xl
                   py-4
@@ -267,44 +183,39 @@ function Hero() {
 
             </div>
 
-            {/* ==========================================
-                STATS
-            ========================================== */}
-
+            {/* Stats */}
             <div
               className="
-                mt-9
-                sm:mt-12
+                mt-10
                 grid
                 grid-cols-1
                 sm:grid-cols-3
-                gap-4
+                gap-3
                 sm:gap-6
-                max-w-2xl
               "
             >
 
-              {/* Cars Listed */}
-
+              {/* Cars */}
               <div
                 className="
                   flex
                   items-center
                   gap-3
-                  bg-white/75
+                  bg-white/85
                   backdrop-blur-sm
                   rounded-2xl
-                  p-3
-                  sm:p-0
+                  px-4
+                  py-3
                   sm:bg-transparent
                   sm:backdrop-blur-0
+                  sm:px-0
+                  sm:py-0
                 "
               >
-
                 <div
                   className="
-                    w-12
-                    h-12
+                    w-11
+                    h-11
                     sm:w-14
                     sm:h-14
                     rounded-full
@@ -319,10 +230,10 @@ function Hero() {
                 </div>
 
                 <div>
-
                   <h3
                     className="
-                      text-2xl
+                      text-xl
+                      sm:text-2xl
                       lg:text-3xl
                       font-black
                       text-orange-500
@@ -334,32 +245,30 @@ function Hero() {
                   <p className="text-sm sm:text-base text-[#5C463B]">
                     Cars Listed
                   </p>
-
                 </div>
-
               </div>
 
-              {/* Local Community */}
-
+              {/* Community */}
               <div
                 className="
                   flex
                   items-center
                   gap-3
-                  bg-white/75
+                  bg-white/85
                   backdrop-blur-sm
                   rounded-2xl
-                  p-3
-                  sm:p-0
+                  px-4
+                  py-3
                   sm:bg-transparent
                   sm:backdrop-blur-0
+                  sm:px-0
+                  sm:py-0
                 "
               >
-
                 <div
                   className="
-                    w-12
-                    h-12
+                    w-11
+                    h-11
                     sm:w-14
                     sm:h-14
                     rounded-full
@@ -374,10 +283,10 @@ function Hero() {
                 </div>
 
                 <div>
-
                   <h3
                     className="
-                      text-2xl
+                      text-xl
+                      sm:text-2xl
                       lg:text-3xl
                       font-black
                       text-orange-500
@@ -389,32 +298,30 @@ function Hero() {
                   <p className="text-sm sm:text-base text-[#5C463B]">
                     Community
                   </p>
-
                 </div>
-
               </div>
 
               {/* Safety */}
-
               <div
                 className="
                   flex
                   items-center
                   gap-3
-                  bg-white/75
+                  bg-white/85
                   backdrop-blur-sm
                   rounded-2xl
-                  p-3
-                  sm:p-0
+                  px-4
+                  py-3
                   sm:bg-transparent
                   sm:backdrop-blur-0
+                  sm:px-0
+                  sm:py-0
                 "
               >
-
                 <div
                   className="
-                    w-12
-                    h-12
+                    w-11
+                    h-11
                     sm:w-14
                     sm:h-14
                     rounded-full
@@ -429,10 +336,10 @@ function Hero() {
                 </div>
 
                 <div>
-
                   <h3
                     className="
-                      text-2xl
+                      text-xl
+                      sm:text-2xl
                       lg:text-3xl
                       font-black
                       text-orange-500
@@ -444,9 +351,7 @@ function Hero() {
                   <p className="text-sm sm:text-base text-[#5C463B]">
                     Verified
                   </p>
-
                 </div>
-
               </div>
 
             </div>
