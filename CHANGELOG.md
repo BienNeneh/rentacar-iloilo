@@ -9,15 +9,25 @@ Release Date: August 14, 2026
 ### 🔐 Authentication
 
 - Added Firebase email verification.
-- Verification email is automatically sent during registration.
-- Added dedicated email verification page.
-- Added resend verification email.
+- Verification emails are automatically sent during registration.
+- Added dedicated Email Verification page.
+- Added resend verification email functionality.
 - Added verification status checking.
 - Unverified users are redirected to `/verify-email`.
 - Unverified users cannot complete the normal login flow.
 - Verified users can continue into the application.
 - Improved authentication error messages.
-- Tested complete registration → verification → login flow.
+- Tested the complete registration → verification → login flow.
+
+---
+
+### 🎨 Authentication UI
+
+- Redesigned Login page.
+- Redesigned Registration page.
+- Added dedicated Email Verification interface.
+- Improved RentACar branding across authentication screens.
+- Improved responsive authentication layouts.
 
 ---
 
@@ -29,16 +39,7 @@ Release Date: August 14, 2026
 - Improved mobile CTA buttons.
 - Improved mobile statistics layout.
 - Improved homepage responsiveness.
-
----
-
-### 🎨 UI Improvements
-
-- Redesigned Login page.
-- Redesigned Registration page.
-- Added dedicated Email Verification UI.
-- Improved RentACar branding and authentication screens.
-- Improved responsive layouts across authentication pages.
+- Improved visibility of the vehicle search section on mobile.
 
 ---
 
@@ -63,11 +64,11 @@ Successfully tested:
 
 Status:
 
-🟢 Major Features Completed
+🟢 Completed
 
 ---
 
-# Version 0.8.4 — Notification Completion
+## Version 0.8.4 — Notification Completion
 
 Release Date: August 13, 2026
 
@@ -105,33 +106,17 @@ Release Date: August 13, 2026
 
 ---
 
-### 🧪 Testing
-
-Tested:
-
-- Booking approval notifications
-- Booking rejection notifications
-- Renter cancellation notifications
-- Owner cancellation notifications
-- Rental completion notifications
-- Booking navigation
-- Booking highlighting
-- Real-time notifications
-- Mobile notifications
-
----
-
 ### 📌 Version Status
 
 **Version 0.8.4 — Notification Completion**
 
 Status:
 
-🟡 Testing / Stabilization
+🟡 Completed
 
 ---
 
-# Version 0.8.3 — Booking History & Manual Completion
+## Version 0.8.3 — Booking History & Manual Completion
 
 Release Date: August 8, 2026
 
@@ -187,7 +172,7 @@ Status:
 
 ---
 
-# Version 0.8.2 — Notification Interaction
+## Version 0.8.2 — Notification Interaction
 
 Release Date: August 8, 2026
 
@@ -222,7 +207,7 @@ Status:
 
 ---
 
-# Version 0.8.1 — UI & Architecture Polish
+## Version 0.8.1 — UI & Architecture Polish
 
 Release Date: August 7, 2026
 

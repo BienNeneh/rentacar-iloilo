@@ -2,6 +2,8 @@ import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import hostBenefits from "../../data/hostBenefits";
 
+import hostCar from "../../assets/images/Sedan.jpg";
+
 function BecomeHost() {
   const navigate = useNavigate();
 
@@ -15,7 +17,6 @@ function BecomeHost() {
           {/* =========================
               LEFT
           ========================= */}
-
           <div>
 
             {/* Label */}
@@ -43,6 +44,7 @@ function BecomeHost() {
               Become a Host
             </div>
 
+
             {/* Heading */}
 
             <h2
@@ -57,10 +59,12 @@ function BecomeHost() {
               "
             >
               Turn Your Car Into
+
               <span className="block text-orange-500">
                 Extra Income.
               </span>
             </h2>
+
 
             {/* Description */}
 
@@ -78,8 +82,9 @@ function BecomeHost() {
               renters across Iloilo Province.
             </p>
 
+
             {/* =========================
-                Benefits
+                BENEFITS
             ========================= */}
 
             <div className="mt-9 space-y-5">
@@ -127,6 +132,7 @@ function BecomeHost() {
 
             </div>
 
+
             {/* =========================
                 CTA
             ========================= */}
@@ -173,6 +179,7 @@ function BecomeHost() {
 
           </div>
 
+
           {/* =========================
               RIGHT — IMAGE
           ========================= */}
@@ -207,6 +214,7 @@ function BecomeHost() {
               "
             />
 
+
             {/* Image */}
 
             <div
@@ -221,8 +229,9 @@ function BecomeHost() {
             >
 
               <img
-                src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1000&auto=format&fit=crop&q=80"
-                alt="Host your car"
+                src={hostCar}
+                alt="Car available for hosting"
+                draggable={false}
                 className="
                   h-[420px]
                   w-full
@@ -230,9 +239,11 @@ function BecomeHost() {
                   transition-transform
                   duration-700
                   hover:scale-105
+
                   sm:h-[500px]
                 "
               />
+
 
               {/* Image gradient */}
 
@@ -246,6 +257,7 @@ function BecomeHost() {
                   to-transparent
                 "
               />
+
 
               {/* Floating message */}
 
@@ -262,6 +274,7 @@ function BecomeHost() {
                   p-4
                   shadow-xl
                   backdrop-blur
+
                   sm:left-8
                   sm:right-auto
                   sm:max-w-xs
