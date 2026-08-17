@@ -28,6 +28,7 @@ function Hero() {
       {/* =========================================================
           BACKGROUND IMAGE
       ========================================================= */}
+
       <div className="absolute inset-0">
 
         <img
@@ -45,14 +46,14 @@ function Hero() {
           "
         />
 
-        {/* Subtle image darkening */}
+        {/* Overall image protection */}
         <div className="absolute inset-0 bg-black/10" />
 
+
         {/* =====================================================
-            DESKTOP LEFT OVERLAY
-            Keeps the text readable while allowing the sunset
-            photograph to remain visible.
+            DESKTOP OVERLAY
         ===================================================== */}
+
         <div
           className="
             absolute
@@ -68,17 +69,22 @@ function Hero() {
           "
         />
 
+
         {/* =====================================================
             MOBILE OVERLAY
+
+            Much lighter than before so the Philippine sunset
+            and vehicles remain visible.
         ===================================================== */}
+
         <div
           className="
             absolute
             inset-0
             bg-gradient-to-b
-            from-[#FFF8ED]/95
-            via-[#FFF8ED]/80
-            to-[#FFF8ED]/25
+            from-[#FFF8ED]/75
+            via-[#FFF8ED]/40
+            to-black/10
             lg:hidden
           "
         />
@@ -89,13 +95,24 @@ function Hero() {
       {/* =========================================================
           HERO CONTENT
       ========================================================= */}
-      <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-16">
+
+      <div
+        className="
+          relative
+          z-20
+          mx-auto
+          max-w-7xl
+          px-6
+          lg:px-16
+        "
+      >
 
         <div
           className="
             flex
-            min-h-[720px]
+            min-h-[760px]
             items-center
+
             lg:min-h-[850px]
           "
         >
@@ -105,21 +122,25 @@ function Hero() {
               w-full
               max-w-3xl
               py-16
+
               sm:py-20
+
               lg:py-0
             "
           >
 
+
             {/* =====================================================
                 LOCATION BADGE
             ===================================================== */}
+
             <div
               className="
                 inline-flex
                 items-center
                 gap-2
                 rounded-full
-                bg-white/95
+                bg-white/90
                 px-4
                 py-2
                 text-sm
@@ -138,9 +159,10 @@ function Hero() {
             {/* =====================================================
                 MAIN HEADING
             ===================================================== */}
+
             <h1
               className="
-                mt-8
+                mt-7
                 max-w-3xl
                 text-4xl
                 font-black
@@ -150,6 +172,7 @@ function Hero() {
 
                 sm:text-5xl
 
+                lg:mt-8
                 lg:text-7xl
               "
             >
@@ -166,13 +189,14 @@ function Hero() {
             {/* =====================================================
                 DESCRIPTION
             ===================================================== */}
+
             <p
               className="
                 mt-6
                 max-w-2xl
                 text-base
                 leading-7
-                text-[#5C463B]
+                text-[#4F3B33]
 
                 sm:text-lg
                 sm:leading-8
@@ -181,14 +205,16 @@ function Hero() {
               "
             >
               Discover vehicles shared by your local community.
-              Whether you're planning a beach getaway, a weekend road trip,
-              or visiting family, your next adventure starts here.
+              Whether you're planning a beach getaway, a weekend
+              road trip, or visiting family, your next adventure
+              starts here.
             </p>
 
 
             {/* =====================================================
-                ACTION BUTTONS
+                BUTTONS
             ===================================================== */}
+
             <div
               className="
                 mt-8
@@ -201,6 +227,7 @@ function Hero() {
             >
 
               {/* Explore Cars */}
+
               <button
                 onClick={() => navigate("/list-car")}
                 className="
@@ -224,6 +251,7 @@ function Hero() {
 
 
               {/* Become a Host */}
+
               <button
                 onClick={handleBecomeHost}
                 className="
@@ -232,7 +260,7 @@ function Hero() {
                   justify-center
                   gap-2
                   rounded-2xl
-                  bg-white/95
+                  bg-white/90
                   px-8
                   py-4
                   font-semibold
@@ -256,8 +284,9 @@ function Hero() {
 
 
             {/* =====================================================
-                STATS / VALUE PROPOSITIONS
+                STATS
             ===================================================== */}
+
             <div
               className="
                 mt-10
@@ -272,22 +301,28 @@ function Hero() {
               "
             >
 
+
               {/* ===================================================
                   LOCAL LISTINGS
               =================================================== */}
+
               <div
                 className="
                   flex
                   items-center
                   gap-3
                   rounded-2xl
-                  bg-white/90
+                  border
+                  border-white/50
+                  bg-white/70
                   px-4
                   py-3
                   shadow-lg
                   backdrop-blur-md
 
-                  lg:bg-white/85
+                  sm:px-4
+
+                  lg:bg-white/80
                 "
               >
 
@@ -300,7 +335,7 @@ function Hero() {
                     items-center
                     justify-center
                     rounded-full
-                    bg-orange-100
+                    bg-orange-100/90
 
                     sm:h-14
                     sm:w-14
@@ -310,6 +345,7 @@ function Hero() {
                     className="
                       text-lg
                       text-orange-500
+
                       sm:text-xl
                     "
                   />
@@ -342,19 +378,22 @@ function Hero() {
               {/* ===================================================
                   COMMUNITY
               =================================================== */}
+
               <div
                 className="
                   flex
                   items-center
                   gap-3
                   rounded-2xl
-                  bg-white/90
+                  border
+                  border-white/50
+                  bg-white/70
                   px-4
                   py-3
                   shadow-lg
                   backdrop-blur-md
 
-                  lg:bg-white/85
+                  lg:bg-white/80
                 "
               >
 
@@ -367,7 +406,7 @@ function Hero() {
                     items-center
                     justify-center
                     rounded-full
-                    bg-orange-100
+                    bg-orange-100/90
 
                     sm:h-14
                     sm:w-14
@@ -377,6 +416,7 @@ function Hero() {
                     className="
                       text-lg
                       text-orange-500
+
                       sm:text-xl
                     "
                   />
@@ -407,21 +447,24 @@ function Hero() {
 
 
               {/* ===================================================
-                  COMMUNITY POWERED
+                  ILOILO COMMUNITY
               =================================================== */}
+
               <div
                 className="
                   flex
                   items-center
                   gap-3
                   rounded-2xl
-                  bg-white/90
+                  border
+                  border-white/50
+                  bg-white/70
                   px-4
                   py-3
                   shadow-lg
                   backdrop-blur-md
 
-                  lg:bg-white/85
+                  lg:bg-white/80
                 "
               >
 
@@ -434,7 +477,7 @@ function Hero() {
                     items-center
                     justify-center
                     rounded-full
-                    bg-orange-100
+                    bg-orange-100/90
 
                     sm:h-14
                     sm:w-14
@@ -444,6 +487,7 @@ function Hero() {
                     className="
                       text-lg
                       text-orange-500
+
                       sm:text-xl
                     "
                   />
