@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import BookingLifecycle from "./components/system/BookingLifecycle";
+import SplashScreen from "./components/common/SplashScreen";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -27,8 +29,27 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Give the application a moment to initialize
+    // before revealing the main website.
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <BrowserRouter>
+
+      {/* =========================
+          SPLASH SCREEN
+      ========================= */}
+
+      {showSplash && <SplashScreen />}
+
 
       {/* =========================
           SYSTEM
@@ -40,6 +61,11 @@ function App() {
         position="top-right"
         reverseOrder={false}
       />
+
+
+      {/* =========================
+          ROUTES
+      ========================= */}
 
       <Routes>
 
