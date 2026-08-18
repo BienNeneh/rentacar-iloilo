@@ -93,9 +93,13 @@ function MobileDrawer({
             <div>
 
               <h2 className="font-bold text-lg text-[#3A2A27]">
-                {user
-                  ? userProfile?.fullName?.split(" ")[0] || "User"
-                  : "Guest"}
+               {user
+  ? (
+      userProfile?.fullName ||
+      user?.displayName ||
+      "User"
+    ).split(" ")[0]
+  : "Guest"}
               </h2>
 
               <p className="text-sm text-gray-500">

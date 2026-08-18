@@ -1,7 +1,18 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
 import { auth, db } from "../firebase/firebase";
+
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+
+import {
+  doc,
+  getDoc,
+} from "firebase/firestore";
 
 const AuthContext = createContext();
 
@@ -15,32 +26,78 @@ export function AuthProvider({ children }) {
       auth,
       async (currentUser) => {
         try {
+          setLoading(true);
           setUser(currentUser);
 
-          if (currentUser) {
-            const docRef = doc(
-              db,
-              "users",
+          // =========================
+          // USER LOGGED OUT
+          // =========================
+
+          if (!currentUser) {
+            setUserProfile(null);
+            return;
+          }
+
+          // =========================
+          // FIREBASE AUTH USER
+          // =========================
+
+          const userRef = doc(
+            db,
+            "users",
+            currentUser.uid
+          );
+
+          const userSnap = await getDoc(userRef);
+
+          if (userSnap.exists()) {
+            const profileData = userSnap.data();
+
+            setUserProfile(profileData);
+
+            console.log(
+              "User profile loaded:",
+              profileData
+            );
+          } else {
+            // =========================
+            // FIRESTORE PROFILE MISSING
+            // =========================
+
+            console.warn(
+              "No Firestore profile found for:",
               currentUser.uid
             );
 
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-              setUserProfile(docSnap.data());
-            } else {
-              setUserProfile(null);
-            }
-          } else {
-            setUserProfile(null);
+            setUserProfile({
+              fullName:
+                currentUser.displayName || "",
+              email:
+                currentUser.email || "",
+            });
           }
+
         } catch (error) {
           console.error(
             "Auth Context Error:",
             error
           );
 
-          setUserProfile(null);
+          // =========================
+          // FALLBACK
+          // =========================
+
+          if (currentUser) {
+            setUserProfile({
+              fullName:
+                currentUser.displayName || "",
+              email:
+                currentUser.email || "",
+            });
+          } else {
+            setUserProfile(null);
+          }
+
         } finally {
           setLoading(false);
         }
@@ -50,6 +107,19 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
+  // =========================
+  // DISPLAY NAME
+  // =========================
+
+  const displayName =
+    userProfile?.fullName ||
+    user?.displayName ||
+    "User";
+
+  // =========================
+  // CONTEXT
+  // =========================
+
   return (
     <AuthContext.Provider
       value={{
@@ -57,7 +127,8 @@ export function AuthProvider({ children }) {
         userProfile,
         loading,
 
-        // Easy way to check verification anywhere
+        displayName,
+
         isEmailVerified:
           user?.emailVerified === true,
       }}

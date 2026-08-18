@@ -14,64 +14,130 @@ import MobileDrawer from "./navbar/MobileDrawer";
 
 function DashboardNavbar() {
   const navigate = useNavigate();
-  const { user, userProfile } = useAuth();
+
+  const {
+    user,
+    userProfile,
+    displayName,
+  } = useAuth();
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // =========================
+  // LOGOUT
+  // =========================
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
+
       setMenuOpen(false);
+
       navigate("/");
     } catch (error) {
-      console.error(error);
+      console.error("Logout Error:", error);
+
       alert("Failed to logout.");
     }
   };
 
   return (
     <>
-      {/* ================= NAVBAR ================= */}
+      {/* =========================
+          NAVBAR
+      ========================= */}
 
-      <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/85 border-b border-orange-100 shadow-lg">
+      <nav
+        className="
+          sticky
+          top-0
+          z-50
+          backdrop-blur-xl
+          bg-white/85
+          border-b
+          border-orange-100
+          shadow-lg
+        "
+      >
+        <div
+          className="
+            max-w-7xl
+            mx-auto
+            px-5
+            lg:px-8
+            py-4
+            flex
+            justify-between
+            items-center
+          "
+        >
 
-        <div className="max-w-7xl mx-auto px-5 lg:px-8 py-4 flex justify-between items-center">
-
-          {/* Logo */}
+          {/* =========================
+              LOGO
+          ========================= */}
 
           <NavbarLogo />
 
-          {/* Desktop Navigation */}
+
+          {/* =========================
+              DESKTOP NAVIGATION
+          ========================= */}
 
           <div className="hidden lg:flex items-center gap-12">
 
             <DesktopNavigation user={user} />
 
-            {/* Right Side */}
+
+            {/* =========================
+                DESKTOP RIGHT SIDE
+            ========================= */}
 
             <div className="relative flex items-center gap-5">
 
               {user ? (
                 <>
+                  {/* Notifications */}
+
                   <NotificationBell user={user} />
 
+
+                  {/* User */}
+
                   <UserMenu
-                    userProfile={userProfile}
+                    displayName={displayName}
                     handleLogout={handleLogout}
                   />
                 </>
               ) : (
                 <>
+                  {/* Sign In */}
+
                   <Link
                     to="/login"
-                    className="font-semibold hover:text-orange-500 transition"
+                    className="
+                      font-semibold
+                      hover:text-orange-500
+                      transition
+                    "
                   >
                     Sign In
                   </Link>
 
+
+                  {/* Get Started */}
+
                   <Link
                     to="/register"
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-full font-semibold transition"
+                    className="
+                      bg-orange-500
+                      hover:bg-orange-600
+                      text-white
+                      px-5
+                      py-3
+                      rounded-full
+                      font-semibold
+                      transition
+                    "
                   >
                     Get Started
                   </Link>
@@ -81,32 +147,59 @@ function DashboardNavbar() {
             </div>
 
           </div>
-{/* Mobile Actions */}
 
-<div className="lg:hidden flex items-center gap-2">
 
-  {/* Mobile Notification */}
+          {/* =========================
+              MOBILE ACTIONS
+          ========================= */}
 
-  {user && (
-    <NotificationBell user={user} />
-  )}
+          <div
+            className="
+              lg:hidden
+              flex
+              items-center
+              gap-2
+            "
+          >
 
-  {/* Mobile Menu */}
+            {/* Mobile Notification */}
 
-  <button
-    onClick={() => setMenuOpen(true)}
-    className="w-11 h-11 rounded-full bg-orange-50 flex items-center justify-center text-orange-500"
-  >
-    <FaBars />
-  </button>
+            {user && (
+              <NotificationBell user={user} />
+            )}
 
-</div>
+
+            {/* Mobile Menu */}
+
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+              className="
+                w-11
+                h-11
+                rounded-full
+                bg-orange-50
+                flex
+                items-center
+                justify-center
+                text-orange-500
+                hover:bg-orange-100
+                transition
+              "
+            >
+              <FaBars />
+            </button>
+
+          </div>
 
         </div>
-
       </nav>
 
-      {/* Mobile Drawer */}
+
+      {/* =========================
+          MOBILE DRAWER
+      ========================= */}
 
       <MobileDrawer
         menuOpen={menuOpen}
